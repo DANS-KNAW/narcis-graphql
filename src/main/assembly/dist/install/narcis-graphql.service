@@ -1,0 +1,18 @@
+[Unit]
+Description=NARCIS Graphql Service
+
+[Service]
+ExecStart=/bin/java \
+   $INITIAL_HEAP_SIZE \
+   -Dlogback.configurationFile=/etc/opt/dans.knaw.nl/narcis-graphql/logback-service.xml \
+   -Dapp.home=/opt/dans.knaw.nl/narcis-graphql \
+   -Dorg.scalatra.environment="production" \
+   -jar /opt/dans.knaw.nl/narcis-graphql/bin/narcis-graphql.jar run-service
+# Java returns 143 even if the SIGTERM was handled correctly.
+SuccessExitStatus=143
+
+User=narcis-graphql
+Group=narcis-graphql
+
+[Install]
+WantedBy=multi-user.target
