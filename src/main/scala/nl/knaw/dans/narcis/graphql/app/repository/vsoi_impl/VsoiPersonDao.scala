@@ -13,42 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.narcis.graphql.app.repository.demo_impl
+package nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl
 
-import java.util.UUID
-
-import nl.knaw.dans.narcis.graphql.app.model.{ InputPerson, Person, PersonId }
-import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import nl.knaw.dans.narcis.graphql.app.model.{InputPerson, Person, PersonId}
+import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
+import org.joda.time.LocalDate
 
-import scala.collection.mutable
+import scala.collection.immutable.Stream.Empty
 
-class DemoPersonDao(initalInput: Map[PersonId, Person] = Map.empty) extends PersonDao with DebugEnhancedLogging {
-
-  private val repo: mutable.Map[PersonId, Person] = mutable.Map(initalInput.toSeq: _*)
-
-  override def getAll: Seq[Person] = {
-    trace(())
-    repo.values.toSeq
-  }
+class VsoiPersonDao  extends PersonDao with DebugEnhancedLogging {
+  override def getAll: Seq[Person] = ???
 
   override def find(id: PersonId): Option[Person] = {
     trace(id)
-    repo.get(id)
+    logger.info("Fixed to Alice!")
+    // fixed fake, always return Alice!
+    Some(Person(id, "Alice", new LocalDate(1990, 1, 1), "London"))
   }
 
   override def find(ids: Seq[PersonId]): Seq[Person] = {
     trace(ids)
-    ids.flatMap(repo.get)
+    logger.info("requesting persons with ids")
+    find(ids.head).toList
+    // nothing yet!
+    //Seq.empty[Person]
   }
 
-  override def store(person: InputPerson): Person = {
-    trace(person)
-    val personId = UUID.randomUUID().toString
-    val p = person.toPerson(personId)
-
-    repo += (personId -> p)
-
-    p
-  }
+  override def store(person: InputPerson): Person = ???
 }

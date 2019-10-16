@@ -23,11 +23,11 @@ import org.joda.time.LocalDate
 
 class DemoRepo {
 
-  private val pId1 = UUID.fromString("00000000-0000-0000-0000-000000000001")
-  private val pId2 = UUID.fromString("00000000-0000-0000-0000-000000000002")
-  private val pId3 = UUID.fromString("00000000-0000-0000-0000-000000000003")
-  private val pId4 = UUID.fromString("00000000-0000-0000-0000-000000000004")
-  private val pId5 = UUID.fromString("00000000-0000-0000-0000-000000000005")
+  private val pId1 = "00000000-0000-0000-0000-000000000001"
+  private val pId2 = "00000000-0000-0000-0000-000000000002"
+  private val pId3 = "00000000-0000-0000-0000-000000000003"
+  private val pId4 = "00000000-0000-0000-0000-000000000004"
+  private val pId5 = "00000000-0000-0000-0000-000000000005"
 
   private val wId1 = UUID.fromString("10000000-0000-0000-0000-000000000000")
   private val wId2 = UUID.fromString("20000000-0000-0000-0000-000000000000")

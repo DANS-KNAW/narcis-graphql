@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.narcis.graphql.app
+package nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl
 
-import java.util.UUID
+import nl.knaw.dans.narcis.graphql.app.repository.Repository
 
-package object model {
-
-  type PersonId = String //UUID
-  type WorkId = UUID
+class VsoiRepo {
+  def repository: Repository = Repository(
+    new VsoiPersonDao,
+    new VsoiWorkDao,
+  )
 }

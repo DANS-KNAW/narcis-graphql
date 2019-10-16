@@ -21,6 +21,7 @@ import better.files.File
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.app.repository.demo_impl.DemoRepo
+import nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl.VsoiRepo
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 import scala.language.reflectiveCalls
@@ -37,7 +38,7 @@ object Command extends App with DebugEnhancedLogging {
   // TODO maybe get rid of the app
   val app = new NarcisGraphqlApp(configuration)
 
-  val repository = new DemoRepo // TODO use real repo
+  val repository = new VsoiRepo //new DemoRepo // TODO use real repo
 
   runSubcommand(app)
     .doIfSuccess(msg => println(s"OK: $msg"))
