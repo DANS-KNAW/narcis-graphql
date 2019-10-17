@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl
+package nl.knaw.dans.narcis.graphql.app.database
 
-import nl.knaw.dans.narcis.graphql.app.database.{DatabaseAccess, VsoiDb}
-import nl.knaw.dans.narcis.graphql.app.repository.Repository
+import nl.knaw.dans.lib.string._
 
-class VsoiRepo(vsoiDb: VsoiDb, sysvsoiAccess: DatabaseAccess) {
-  def repository: Repository = Repository(
-    new VsoiPersonDao(vsoiDb, sysvsoiAccess),
-    new VsoiWorkDao,
-  )
+case class DatabaseConfiguration(dbDriverClassName: String,
+                                 dbUrl: String,
+                                 dbUsername: Option[String] = Option.empty,
+                                 dbPassword: Option[String] = Option.empty)
+
+object DatabaseConfiguration {
+  def apply(dbDriverClassName: String,
+            dbUrl: String,
+            dbUsername: String,
+            dbPassword: String): DatabaseConfiguration = {
+    new DatabaseConfiguration(dbDriverClassName, dbUrl, dbUsername.toOption, dbPassword.toOption)
+  }
 }

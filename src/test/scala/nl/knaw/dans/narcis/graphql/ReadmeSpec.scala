@@ -18,6 +18,7 @@ package nl.knaw.dans.narcis.graphql
 import java.io.ByteArrayOutputStream
 
 import better.files.File
+import nl.knaw.dans.narcis.graphql.app.database.DatabaseConfiguration
 import nl.knaw.dans.narcis.graphql.fixture.CustomMatchers
 import org.scalatest._
 
@@ -30,6 +31,7 @@ class ReadmeSpec extends FlatSpec with Matchers with CustomMatchers {
     version = "my-version",
     serverPort = 12345,
     profilingThreshold = 12 seconds,
+    sysvsoiConfig = DatabaseConfiguration("", "")
   )
   private val clo = new CommandLineOptions(Array[String](), configuration) {
     // avoids System.exit() in case of invalid arguments or "--help"

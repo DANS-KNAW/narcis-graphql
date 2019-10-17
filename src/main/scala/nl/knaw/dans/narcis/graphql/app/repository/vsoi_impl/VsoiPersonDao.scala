@@ -21,15 +21,34 @@ import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
 import org.joda.time.LocalDate
 
 import scala.collection.immutable.Stream.Empty
+import nl.knaw.dans.narcis.graphql.app.database.{DatabaseAccess, VsoiDb}
 
-class VsoiPersonDao  extends PersonDao with DebugEnhancedLogging {
+import scala.util.{Failure, Success}
+
+class VsoiPersonDao(vsoiDb: VsoiDb, sysvsoiAccess: DatabaseAccess)  extends PersonDao with DebugEnhancedLogging {
   override def getAll: Seq[Person] = ???
 
   override def find(id: PersonId): Option[Person] = {
     trace(id)
-    logger.info("Fixed to Alice!")
+    //logger.info("Fixed to Alice!")
     // fixed fake, always return Alice!
-    Some(Person(id, "Alice", new LocalDate(1990, 1, 1), "London"))
+    //Some(Person(id, "Alice", new LocalDate(1990, 1, 1), "London"))
+
+    // TODO get person name from the database
+    //vsoiDb.getPerson(id).tried
+    sysvsoiAccess.doTransaction(implicit connection => vsoiDb.getPerson(id)) match {
+      case Success(Some(person)) => Some(person) // could do more with person before returning it
+      case Success(None) => {
+        logger.info(s"Could not find info for person: $id")
+        None
+      }
+      case Failure(exception) => {
+        logger.info(s"Failed getting info for person $id, error: ${exception.getMessage}")
+        None
+      }
+    }
+
+
   }
 
   override def find(ids: Seq[PersonId]): Seq[Person] = {
