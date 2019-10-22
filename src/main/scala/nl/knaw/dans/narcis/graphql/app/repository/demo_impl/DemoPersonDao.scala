@@ -44,7 +44,7 @@ class DemoPersonDao(initalInput: Map[PersonId, Person] = Map.empty) extends Pers
 
   override def store(person: InputPerson): Person = {
     trace(person)
-    val personId = UUID.randomUUID()
+    val personId = UUID.randomUUID().toString
     val p = person.toPerson(personId)
 
     repo += (personId -> p)

@@ -35,6 +35,10 @@ class GraphQLPerson(private val person: Person) {
   val name: String = person.name
 
   @GraphQLField
+  @GraphQLDescription("The person's email.")
+  val email: Option[String] = person.email
+
+  @GraphQLField
   @GraphQLDescription("The date the person was born.")
   val birthday: LocalDate = person.birthday
 

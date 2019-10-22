@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.narcis.graphql.app
+package nl.knaw.dans.narcis.graphql.app.database
 
-import java.util.UUID
+import nl.knaw.dans.lib.string._
 
-package object model {
+case class DatabaseConfiguration(dbDriverClassName: String,
+                                 dbUrl: String,
+                                 dbUsername: Option[String] = Option.empty,
+                                 dbPassword: Option[String] = Option.empty)
 
-  type PersonId = String //UUID
-  type WorkId = UUID
+object DatabaseConfiguration {
+  def apply(dbDriverClassName: String,
+            dbUrl: String,
+            dbUsername: String,
+            dbPassword: String): DatabaseConfiguration = {
+    new DatabaseConfiguration(dbDriverClassName, dbUrl, dbUsername.toOption, dbPassword.toOption)
+  }
 }

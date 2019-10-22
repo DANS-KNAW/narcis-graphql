@@ -17,6 +17,7 @@ package nl.knaw.dans.narcis.graphql
 
 import better.files.File
 import better.files.File.root
+import nl.knaw.dans.narcis.graphql.app.database.DatabaseConfiguration
 import org.apache.commons.configuration.PropertiesConfiguration
 
 import scala.concurrent.duration._
@@ -25,6 +26,7 @@ import scala.language.postfixOps
 case class Configuration(version: String,
                          serverPort: Int,
                          profilingThreshold: FiniteDuration,
+                         sysvsoiConfig: DatabaseConfiguration,
                         )
 
 object Configuration {
@@ -44,6 +46,12 @@ object Configuration {
       version = (home / "bin" / "version").contentAsString.stripLineEnd,
       serverPort = properties.getInt("daemon.http.port"),
       profilingThreshold = properties.getLong("graphql.profiling.threshold") milliseconds,
+      sysvsoiConfig = DatabaseConfiguration(
+        properties.getString("sysvsoi.database.driver-class"),
+        properties.getString("sysvsoi.database.url"),
+        properties.getString("sysvsoi.database.username"),
+        properties.getString("sysvsoi.database.password"),
+      ),
     )
   }
 }
