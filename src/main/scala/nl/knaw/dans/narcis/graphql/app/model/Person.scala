@@ -17,15 +17,17 @@ package nl.knaw.dans.narcis.graphql.app.model
 
 import org.joda.time.LocalDate
 
-case class Person(personId: PersonId,
+case class Person(personId: PersonId, // for Narcis this is the PRS
                   name: String,
+                  email: Option[String],
                   birthday: LocalDate,
                   place: String,
                  )
 
 case class InputPerson(name: String,
+                       email: Option[String],
                        birthday: LocalDate,
                        place: String,
                       ) {
-  def toPerson(id: PersonId): Person = Person(id, name, birthday, place)
+  def toPerson(id: PersonId): Person = Person(id, name, email, birthday, place)
 }

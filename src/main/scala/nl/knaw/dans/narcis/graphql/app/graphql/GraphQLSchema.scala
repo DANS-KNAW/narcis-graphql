@@ -80,11 +80,13 @@ object GraphQLSchema {
   implicit val InputPersonType: InputObjectType[InputPerson] = deriveInputObjectType[InputPerson](
     InputObjectTypeDescription("The person to be inserted."),
     DocumentInputField("name", "The person's name."),
+    DocumentInputField("email", "The person's email."),
     DocumentInputField("birthday", "The date the person was born."),
     DocumentInputField("place", "The city/town where this person lives."),
   )
   implicit val InputPersonFromInput: FromInput[InputPerson] = fromInput(ad => InputPerson(
     name = ad("name").asInstanceOf[String],
+    email = ad("email").asInstanceOf[Option[String]],
     birthday = ad("birthday").asInstanceOf[LocalDate],
     place = ad("place").asInstanceOf[String],
   ))
