@@ -36,31 +36,29 @@ object Command extends App with DebugEnhancedLogging {
   val commandLine: CommandLineOptions = new CommandLineOptions(args, configuration) {
     verify()
   }
-  // TODO maybe get rid of the app
-  val app = new NarcisGraphqlApp(configuration)
 
   val sysvsoi = new DatabaseAccess(configuration.sysvsoiConfig)
   val vsoiDb = new VsoiDb()
   val repository = new VsoiRepo(vsoiDb, sysvsoi) //new DemoRepo // TODO use real repo
 
-  runSubcommand(app)
+  runSubcommand()
     .doIfSuccess(msg => println(s"OK: $msg"))
     .doIfFailure { case e => logger.error(e.getMessage, e) }
     .doIfFailure { case NonFatal(e) => println(s"FAILED: ${ e.getMessage }") }
 
-  private def runSubcommand(app: NarcisGraphqlApp): Try[FeedBackMessage] = {
+  private def runSubcommand(): Try[FeedBackMessage] = {
     commandLine.subcommand
       .collect {
-        case commandLine.runService => runAsService(app)
+        case commandLine.runService => runAsService()
       }
       .getOrElse(Failure(new IllegalArgumentException(s"Unknown command: ${ commandLine.subcommand }")))
   }
 
-  private def runAsService(app: NarcisGraphqlApp): Try[FeedBackMessage] = Try {
+  private def runAsService(): Try[FeedBackMessage] = Try {
     implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(16))
 
     val service = new NarcisGraphqlService(configuration.serverPort, Map(
-      "/" -> new NarcisGraphqlRootServlet(app, configuration.version),
+      "/" -> new NarcisGraphqlRootServlet(configuration.version),
       "/graphql" -> new GraphQLServlet(configuration.profilingThreshold, repository.repository),
     ))
     Runtime.getRuntime.addShutdownHook(new Thread("service-shutdown") {
