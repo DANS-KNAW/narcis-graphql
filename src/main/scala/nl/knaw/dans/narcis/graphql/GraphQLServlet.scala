@@ -16,23 +16,24 @@
  */
 package nl.knaw.dans.narcis.graphql
 
-import nl.knaw.dans.narcis.graphql.app.graphql.{ DataContext, GraphQLSchema }
-import nl.knaw.dans.narcis.graphql.app.graphql.middleware.{ Middlewares, ProfilingConfiguration }
-import nl.knaw.dans.narcis.graphql.app.repository.Repository
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.lib.logging.servlet.{ LogResponseBodyOnError, MaskedLogFormatter, ServletLogger }
+import nl.knaw.dans.narcis.graphql.app.graphql.middleware.{ Middlewares, ProfilingConfiguration }
+import nl.knaw.dans.narcis.graphql.app.graphql.{ DataContext, GraphQLSchema }
+import nl.knaw.dans.narcis.graphql.app.repository.Repository
+import org.json4s.JsonAST.JObject
 import org.json4s.JsonDSL._
 import org.json4s.ext.UUIDSerializer
-import org.json4s.native.{JsonMethods, Serialization}
-import org.json4s.{DefaultFormats, Formats, JValue}
+import org.json4s.native.Serialization
+import org.json4s.{ DefaultFormats, Formats, JValue }
 import org.scalatra._
 import sangria.ast.Document
 import sangria.execution._
 import sangria.marshalling.json4s.native._
-import sangria.parser.{DeliveryScheme, ParserConfig, QueryParser, SyntaxError}
+import sangria.parser.{ DeliveryScheme, ParserConfig, QueryParser, SyntaxError }
 
 import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 class GraphQLServlet(profilingThreshold: FiniteDuration,
                      repository: Repository,
@@ -80,13 +81,13 @@ class GraphQLServlet(profilingThreshold: FiniteDuration,
     },
   )
 
-  private def execute(variables: Option[String], operation: Option[String], middlewares: Middlewares)(queryAst: Document): Future[ActionResult] = {
+  private def execute(variables: Option[JValue], operation: Option[String], middlewares: Middlewares)(queryAst: Document): Future[ActionResult] = {
     Executor.execute(
       schema = GraphQLSchema.schema,
       queryAst = queryAst,
       userContext = DataContext(repository),
       operationName = operation,
-      variables = parseVariables(variables),
+      variables = variables.getOrElse(JObject(Nil)),
       deferredResolver = GraphQLSchema.deferredResolver,
       exceptionHandler = defaultExceptionHandler,
       middleware = middlewares.values,
@@ -97,12 +98,6 @@ class GraphQLServlet(profilingThreshold: FiniteDuration,
         case error: QueryAnalysisError => BadRequest(Serialization.write(error.resolveError))
         case error: ErrorWithResolver => InternalServerError(Serialization.write(error.resolveError))
       }
-  }
-
-  private def parseVariables(optS: Option[String]): JValue = {
-    optS.filter(s => s.trim != "" && s.trim != "null")
-      .map(JsonMethods.parse(_))
-      .getOrElse(Nil)
   }
 
   private def syntaxError(error: SyntaxError): String = {
