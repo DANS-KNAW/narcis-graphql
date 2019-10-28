@@ -21,7 +21,7 @@ import better.files.File
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.app.database.{ DatabaseAccess, VsoiDb }
-import nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl.VsoiRepo
+import nl.knaw.dans.narcis.graphql.app.repository.narcis_impl.NarcisRepo
 
 import scala.concurrent.{ ExecutionContext, ExecutionContextExecutor }
 import scala.language.reflectiveCalls
@@ -57,7 +57,7 @@ object Command extends App with DebugEnhancedLogging {
       "/" -> new NarcisGraphqlRootServlet(configuration.version),
       "/graphql" -> new GraphQLServlet(
         database = sysvsoi,
-        repository = implicit connection => new VsoiRepo(new VsoiDb()).repository,
+        repository = implicit connection => new NarcisRepo(new VsoiDb()).repository,
         profilingThreshold = configuration.profilingThreshold,
       ),
       "/graphiql" -> new GraphiQLServlet("/graphql"),
