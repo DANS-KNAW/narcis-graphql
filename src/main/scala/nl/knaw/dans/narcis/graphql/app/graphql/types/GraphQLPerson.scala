@@ -46,12 +46,12 @@ class GraphQLPerson(private val person: Person) {
   @GraphQLDescription("The city/town where this person lives.")
   val place: String = person.place
 
-//  @GraphQLField
-//  @GraphQLDescription("")
-//  def externalIds(implicit ctx: Context[DataContext, GraphQLPerson]): Seq[GraphQLExternalPersonId] = {
-//    ???
-//  }
-//
+  @GraphQLField
+  @GraphQLDescription("")
+  def externalIds(implicit ctx: Context[DataContext, GraphQLPerson]): Seq[GraphQLExternalPersonId] = {
+    ???
+  }
+
 //  @GraphQLField
 //  @GraphQLDescription("")
 //  def externalId(`type`: ExternalPersonIdType)(implicit ctx: Context[DataContext, GraphQLPerson]): Seq[GraphQLExternalPersonId] = {
