@@ -21,8 +21,7 @@ import better.files.File
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.app.database.{ DatabaseAccess, VsoiDb }
-import nl.knaw.dans.narcis.graphql.app.repository.demo_impl.DemoRepo
-import nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl.VsoiRepo
+import nl.knaw.dans.narcis.graphql.app.repository.narcis_impl.NarcisRepo
 
 import scala.concurrent.{ ExecutionContext, ExecutionContextExecutor }
 import scala.language.reflectiveCalls
@@ -36,10 +35,6 @@ object Command extends App with DebugEnhancedLogging {
   val commandLine: CommandLineOptions = new CommandLineOptions(args, configuration) {
     verify()
   }
-
-  val sysvsoi = new DatabaseAccess(configuration.sysvsoiConfig)
-  val vsoiDb = new VsoiDb()
-  val repository = new VsoiRepo(vsoiDb, sysvsoi) //new DemoRepo // TODO use real repo
 
   runSubcommand()
     .doIfSuccess(msg => println(s"OK: $msg"))
@@ -55,11 +50,16 @@ object Command extends App with DebugEnhancedLogging {
   }
 
   private def runAsService(): Try[FeedBackMessage] = Try {
+    val sysvsoi = new DatabaseAccess(configuration.sysvsoiConfig)
     implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(16))
 
     val service = new NarcisGraphqlService(configuration.serverPort, Map(
       "/" -> new NarcisGraphqlRootServlet(configuration.version),
-      "/graphql" -> new GraphQLServlet(configuration.profilingThreshold, repository.repository),
+      "/graphql" -> new GraphQLServlet(
+        database = sysvsoi,
+        repository = implicit connection => new NarcisRepo(new VsoiDb()).repository,
+        profilingThreshold = configuration.profilingThreshold,
+      ),
       "/graphiql" -> new GraphiQLServlet("/graphql"),
     ))
     Runtime.getRuntime.addShutdownHook(new Thread("service-shutdown") {

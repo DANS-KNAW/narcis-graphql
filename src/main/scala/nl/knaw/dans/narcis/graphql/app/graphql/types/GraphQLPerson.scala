@@ -46,6 +46,35 @@ class GraphQLPerson(private val person: Person) {
   @GraphQLDescription("The city/town where this person lives.")
   val place: String = person.place
 
+//  @GraphQLField
+//  @GraphQLDescription("")
+//  def externalIds(implicit ctx: Context[DataContext, GraphQLPerson]): Seq[GraphQLExternalPersonId] = {
+//    ???
+//  }
+//
+//  @GraphQLField
+//  @GraphQLDescription("")
+//  def externalId(`type`: ExternalPersonIdType)(implicit ctx: Context[DataContext, GraphQLPerson]): Seq[GraphQLExternalPersonId] = {
+//    ???
+//  }
+
+  /*
+    query GetPersonData {
+      person(id: "PRS12345") {
+        id
+        name
+        externalIds {
+          type
+          value
+        }
+        externalId(type: ORCID) {
+          type
+          value
+        }
+      }
+    }
+   */
+
   // NOTE: toggle between these 2 implementations and see the difference
   //  in the number of interactions with the DAO
 //  @GraphQLField

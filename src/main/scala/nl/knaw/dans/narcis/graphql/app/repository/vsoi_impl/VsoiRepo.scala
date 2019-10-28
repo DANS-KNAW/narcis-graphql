@@ -15,12 +15,14 @@
  */
 package nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl
 
-import nl.knaw.dans.narcis.graphql.app.database.{DatabaseAccess, VsoiDb}
+import java.sql.Connection
+
+import nl.knaw.dans.narcis.graphql.app.database.VsoiDb
 import nl.knaw.dans.narcis.graphql.app.repository.Repository
 
-class VsoiRepo(vsoiDb: VsoiDb, sysvsoiAccess: DatabaseAccess) {
+class VsoiRepo(vsoiDb: VsoiDb)(implicit sysVSOIConnection: Connection) {
   def repository: Repository = Repository(
-    new VsoiPersonDao(vsoiDb, sysvsoiAccess),
+    new VsoiPersonDao(vsoiDb),
     new VsoiWorkDao,
   )
 }

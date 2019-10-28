@@ -16,8 +16,11 @@
  */
 package nl.knaw.dans.narcis.graphql
 
+import java.sql.Connection
+
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.lib.logging.servlet.{ LogResponseBodyOnError, MaskedLogFormatter, ServletLogger }
+import nl.knaw.dans.narcis.graphql.app.database.DatabaseAccess
 import nl.knaw.dans.narcis.graphql.app.graphql.middleware.{ Middlewares, ProfilingConfiguration }
 import nl.knaw.dans.narcis.graphql.app.graphql.{ DataContext, GraphQLSchema }
 import nl.knaw.dans.narcis.graphql.app.repository.Repository
@@ -35,8 +38,9 @@ import sangria.parser.{ DeliveryScheme, ParserConfig, QueryParser, SyntaxError }
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ ExecutionContext, Future }
 
-class GraphQLServlet(profilingThreshold: FiniteDuration,
-                     repository: Repository,
+class GraphQLServlet(database: DatabaseAccess,
+                     repository: Connection => Repository,
+                     profilingThreshold: FiniteDuration,
                     )(implicit protected val executor: ExecutionContext)
   extends ScalatraServlet
     with CorsSupport
@@ -82,21 +86,26 @@ class GraphQLServlet(profilingThreshold: FiniteDuration,
   )
 
   private def execute(variables: Option[JValue], operation: Option[String], middlewares: Middlewares)(queryAst: Document): Future[ActionResult] = {
-    Executor.execute(
-      schema = GraphQLSchema.schema,
-      queryAst = queryAst,
-      userContext = DataContext(repository),
-      operationName = operation,
-      variables = variables.getOrElse(JObject(Nil)),
-      deferredResolver = GraphQLSchema.deferredResolver,
-      exceptionHandler = defaultExceptionHandler,
-      middleware = middlewares.values,
-    )
-      .map(Serialization.writePretty(_))
-      .map(Ok(_))
+    database.futureTransaction(connection => {
+      Executor.execute(
+        schema = GraphQLSchema.schema,
+        queryAst = queryAst,
+        userContext = DataContext(connection, repository),
+        operationName = operation,
+        variables = variables.getOrElse(JObject(Nil)),
+        deferredResolver = GraphQLSchema.deferredResolver,
+        exceptionHandler = defaultExceptionHandler,
+        middleware = middlewares.values,
+      )
+        .map(Serialization.writePretty(_))
+        .map(Ok(_))
+        .recover {
+          case error: QueryAnalysisError => BadRequest(Serialization.write(error.resolveError))
+          case error: ErrorWithResolver => InternalServerError(Serialization.write(error.resolveError))
+        }
+    })
       .recover {
-        case error: QueryAnalysisError => BadRequest(Serialization.write(error.resolveError))
-        case error: ErrorWithResolver => InternalServerError(Serialization.write(error.resolveError))
+        case error => InternalServerError(Serialization.write(error.getMessage))
       }
   }
 
