@@ -6,8 +6,7 @@ narcis-graphql
 SYNOPSIS
 --------
 
-    narcis-graphql (synopsis of command line parameters)
-    narcis-graphql (... possibly multiple lines for subcommands)
+    narcis-graphql run-service
 
 
 DESCRIPTION
@@ -31,7 +30,7 @@ ARGUMENTS
 EXAMPLES
 --------
 
-    narcis-graphql -o value
+    narcis-graphql run-service
 
 
 INSTALLATION AND CONFIGURATION

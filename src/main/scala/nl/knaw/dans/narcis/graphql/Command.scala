@@ -20,14 +20,14 @@ import java.util.concurrent.Executors
 import better.files.File
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import nl.knaw.dans.narcis.graphql.app.database.{DatabaseAccess, VsoiDb}
+import nl.knaw.dans.narcis.graphql.app.database.{ DatabaseAccess, VsoiDb }
 import nl.knaw.dans.narcis.graphql.app.repository.demo_impl.DemoRepo
 import nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl.VsoiRepo
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
+import scala.concurrent.{ ExecutionContext, ExecutionContextExecutor }
 import scala.language.reflectiveCalls
 import scala.util.control.NonFatal
-import scala.util.{Failure, Try}
+import scala.util.{ Failure, Try }
 
 object Command extends App with DebugEnhancedLogging {
   type FeedBackMessage = String
@@ -36,32 +36,31 @@ object Command extends App with DebugEnhancedLogging {
   val commandLine: CommandLineOptions = new CommandLineOptions(args, configuration) {
     verify()
   }
-  // TODO maybe get rid of the app
-  val app = new NarcisGraphqlApp(configuration)
 
   val sysvsoi = new DatabaseAccess(configuration.sysvsoiConfig)
   val vsoiDb = new VsoiDb()
   val repository = new VsoiRepo(vsoiDb, sysvsoi) //new DemoRepo // TODO use real repo
 
-  runSubcommand(app)
+  runSubcommand()
     .doIfSuccess(msg => println(s"OK: $msg"))
     .doIfFailure { case e => logger.error(e.getMessage, e) }
     .doIfFailure { case NonFatal(e) => println(s"FAILED: ${ e.getMessage }") }
 
-  private def runSubcommand(app: NarcisGraphqlApp): Try[FeedBackMessage] = {
+  private def runSubcommand(): Try[FeedBackMessage] = {
     commandLine.subcommand
       .collect {
-        case commandLine.runService => runAsService(app)
+        case commandLine.runService => runAsService()
       }
       .getOrElse(Failure(new IllegalArgumentException(s"Unknown command: ${ commandLine.subcommand }")))
   }
 
-  private def runAsService(app: NarcisGraphqlApp): Try[FeedBackMessage] = Try {
+  private def runAsService(): Try[FeedBackMessage] = Try {
     implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(16))
 
     val service = new NarcisGraphqlService(configuration.serverPort, Map(
-      "/" -> new NarcisGraphqlRootServlet(app, configuration.version),
+      "/" -> new NarcisGraphqlRootServlet(configuration.version),
       "/graphql" -> new GraphQLServlet(configuration.profilingThreshold, repository.repository),
+      "/graphiql" -> new GraphiQLServlet("/graphql"),
     ))
     Runtime.getRuntime.addShutdownHook(new Thread("service-shutdown") {
       override def run(): Unit = {

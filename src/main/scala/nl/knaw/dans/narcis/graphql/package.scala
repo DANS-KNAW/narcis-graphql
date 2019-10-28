@@ -15,6 +15,8 @@
  */
 package nl.knaw.dans.narcis
 
+import org.json4s.JValue
+
 package object graphql {
-  case class GraphQLInput(query: String, variables: Option[String], operationName: Option[String])
+  case class GraphQLInput(query: String, variables: Option[JValue], operationName: Option[String])
 }

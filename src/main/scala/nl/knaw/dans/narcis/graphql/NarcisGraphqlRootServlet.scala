@@ -16,10 +16,14 @@
 package nl.knaw.dans.narcis.graphql
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import nl.knaw.dans.lib.logging.servlet.{ LogResponseBodyOnError, PlainLogFormatter, ServletLogger }
 import org.scalatra._
 
-class NarcisGraphqlRootServlet(app: NarcisGraphqlApp,
-                               version: String) extends ScalatraServlet with DebugEnhancedLogging {
+class NarcisGraphqlRootServlet(version: String) extends ScalatraServlet
+  with ServletLogger
+  with PlainLogFormatter
+  with LogResponseBodyOnError
+  with DebugEnhancedLogging {
 
   get("/") {
     contentType = "text/plain"
