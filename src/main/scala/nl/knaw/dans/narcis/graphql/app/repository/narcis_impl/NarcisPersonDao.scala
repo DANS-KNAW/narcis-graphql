@@ -35,7 +35,7 @@ class NarcisPersonDao(vsoi: VsoiPersonDao,
   override def getExtIds(id: PersonId): Seq[ExternalPersonId] = {
     val extIdsFromVsoi = vsoi.getExtIds(id)
     val extIdsFromDemo = demo.getExtIds(id)
-    // TODO merge them, plus deduplicate... only works if normalised
+    // merge them, plus deduplicate... only works if normalised in the same way
     (extIdsFromVsoi.toSet ++ extIdsFromDemo.toSet).toSeq
   }
 
