@@ -18,14 +18,11 @@ package nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl
 import java.sql.Connection
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import nl.knaw.dans.narcis.graphql.app.model.{ InputPerson, Person, PersonId }
+import nl.knaw.dans.narcis.graphql.app.database.VsoiDb
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, InputPerson, Person, PersonId}
 import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
-import org.joda.time.LocalDate
 
-import scala.collection.immutable.Stream.Empty
-import nl.knaw.dans.narcis.graphql.app.database.{ DatabaseAccess, VsoiDb }
-
-import scala.util.{ Failure, Success }
+import scala.util.{Failure, Success}
 
 class VsoiPersonDao(vsoiDb: VsoiDb)(implicit sysVSOIConnection: Connection)  extends PersonDao with DebugEnhancedLogging {
   override def getAll: Seq[Person] = ???
@@ -36,7 +33,6 @@ class VsoiPersonDao(vsoiDb: VsoiDb)(implicit sysVSOIConnection: Connection)  ext
     // fixed fake, always return Alice!
     //Some(Person(id, "Alice", new LocalDate(1990, 1, 1), "London"))
 
-    // TODO get person name from the database
     //vsoiDb.getPerson(id).tried
     vsoiDb.getPerson(id) match {
       case Success(Some(person)) => Some(person) // could do more with person before returning it
@@ -50,7 +46,6 @@ class VsoiPersonDao(vsoiDb: VsoiDb)(implicit sysVSOIConnection: Connection)  ext
       }
     }
 
-
   }
 
   override def find(ids: Seq[PersonId]): Seq[Person] = {
@@ -62,4 +57,14 @@ class VsoiPersonDao(vsoiDb: VsoiDb)(implicit sysVSOIConnection: Connection)  ext
   }
 
   override def store(person: InputPerson): Person = ???
+
+  override def getExtIds(id: PersonId): Seq[ExternalPersonId] = {
+    vsoiDb.getExternalIdentifiers(id) match {
+      case Failure(exception) => {
+        logger.info(s"Failed getting external identifiers for person $id, error: ${exception.getMessage}")
+        Seq.empty[ExternalPersonId]
+      }
+      case Success(eIds) => eIds
+    }
+  }
 }

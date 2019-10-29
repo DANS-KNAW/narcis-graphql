@@ -17,16 +17,17 @@ package nl.knaw.dans.narcis.graphql.app.graphql
 
 import java.util.UUID
 
-import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{ PersonResolver, WorkResolver }
-import nl.knaw.dans.narcis.graphql.app.graphql.types.{ GraphQLPerson, GraphQLWork, Mutation, Query }
-import nl.knaw.dans.narcis.graphql.app.model.{ InputPerson, InputWork }
+import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{PersonResolver, WorkResolver}
+import nl.knaw.dans.narcis.graphql.app.graphql.types.{GraphQLExternalPersonId, GraphQLPerson, GraphQLWork, Mutation, Query}
+import nl.knaw.dans.narcis.graphql.app.model.PersonIdType.PersonIdType
+import nl.knaw.dans.narcis.graphql.app.model.{InputPerson, InputWork, PersonIdType}
 import org.joda.time.LocalDate
 import sangria.ast.StringValue
 import sangria.execution.deferred.DeferredResolver
-import sangria.macros.derive.{ DocumentInputField, _ }
+import sangria.macros.derive.{DocumentInputField, _}
 import sangria.marshalling.FromInput
-import sangria.schema.{ InputObjectType, ObjectType, ScalarType, Schema }
-import sangria.validation.{ StringCoercionViolation, ValueCoercionViolation, Violation }
+import sangria.schema.{InputObjectType, ObjectType, ScalarType, Schema}
+import sangria.validation.{StringCoercionViolation, ValueCoercionViolation, Violation}
 
 import scala.util.Try
 
@@ -75,6 +76,15 @@ object GraphQLSchema {
       }
     )
   }
+
+  implicit val PersonIdTypeType = deriveEnumType[PersonIdType.Value](
+    EnumTypeDescription("The type of person (author) identifier"),
+    DocumentValue("dai_nl", "Digital Author Identifier (DAI), but specific for The Netherlands"),
+    DocumentValue("orcid", "Open Researcher and Contributor ID (ORCID)"),
+    // TODO all the others...
+  )
+
+  implicit val GraphQLExternalPersonIdType: ObjectType[DataContext, GraphQLExternalPersonId] = deriveObjectType[DataContext, GraphQLExternalPersonId]()
 
   implicit val GraphQLPersonType: ObjectType[DataContext, GraphQLPerson] = deriveObjectType[DataContext, GraphQLPerson]()
   implicit val InputPersonType: InputObjectType[InputPerson] = deriveInputObjectType[InputPerson](

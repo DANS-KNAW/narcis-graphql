@@ -17,6 +17,8 @@ package nl.knaw.dans.narcis.graphql.app.model
 
 import org.joda.time.LocalDate
 
+import scala.collection.mutable.ArrayBuffer
+
 case class Person(personId: PersonId, // for Narcis this is the PRS
                   name: String,
                   email: Option[String],

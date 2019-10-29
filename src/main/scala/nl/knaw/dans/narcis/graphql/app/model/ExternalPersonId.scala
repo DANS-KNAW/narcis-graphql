@@ -34,4 +34,4 @@ object PersonIdType extends Enumeration {
   // @formatter:on
 }
 
-case class ExternalPersonId(idType: PersonIdType, value: String)
+case class ExternalPersonId(idType: PersonIdType, idValue: String)

@@ -23,10 +23,12 @@ import sangria.macros.derive.{GraphQLDescription, GraphQLField, GraphQLName}
 class GraphQLExternalPersonId(externalPersonId: ExternalPersonId) {
 
   @GraphQLField
-  @GraphQLDescription("The type of identifier, specific for a registration authority")
+  @GraphQLName("type")
+  @GraphQLDescription("The type of identifier, specific for a registration authority or organisation")
   val idType = externalPersonId.idType
 
   @GraphQLField
+  @GraphQLName("value")
   @GraphQLDescription("The actual identifier (unique code)")
-  val value = externalPersonId.value
+  val idValue = externalPersonId.idValue
 }

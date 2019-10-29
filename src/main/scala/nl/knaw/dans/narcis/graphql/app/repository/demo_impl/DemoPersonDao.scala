@@ -17,11 +17,12 @@ package nl.knaw.dans.narcis.graphql.app.repository.demo_impl
 
 import java.util.UUID
 
-import nl.knaw.dans.narcis.graphql.app.model.{ InputPerson, Person, PersonId }
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, InputPerson, Person, PersonId, PersonIdType}
 import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 class DemoPersonDao(initalInput: Map[PersonId, Person] = Map.empty) extends PersonDao with DebugEnhancedLogging {
 
@@ -40,6 +41,13 @@ class DemoPersonDao(initalInput: Map[PersonId, Person] = Map.empty) extends Pers
   override def find(ids: Seq[PersonId]): Seq[Person] = {
     trace(ids)
     ids.flatMap(repo.get)
+  }
+
+  override def getExtIds(id: PersonId): Seq[ExternalPersonId] = {
+    trace(id)
+    val fakeId = new ExternalPersonId(PersonIdType.nod_person, "fake-id")
+    List[ExternalPersonId](fakeId, fakeId) // the same fake twice to see if we get a 'distinct' result
+    //ArrayBuffer[ExternalPersonId]()// just empty
   }
 
   override def store(person: InputPerson): Person = {

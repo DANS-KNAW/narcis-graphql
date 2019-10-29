@@ -27,6 +27,7 @@ import sangria.schema.{ Context, DeferredValue }
 class GraphQLPerson(private val person: Person) {
 
   @GraphQLField
+  @GraphQLName("id")
   @GraphQLDescription("The identifier with which this person is associated.")
   val personId: PersonId = person.personId
 
@@ -47,9 +48,10 @@ class GraphQLPerson(private val person: Person) {
   val place: String = person.place
 
   @GraphQLField
-  @GraphQLDescription("")
+  @GraphQLDescription("The external identifiers of this person")
   def externalIds(implicit ctx: Context[DataContext, GraphQLPerson]): Seq[GraphQLExternalPersonId] = {
-    ???
+    // without a resolver...
+    ctx.ctx.repo.personDao.getExtIds(person.personId).map(new GraphQLExternalPersonId(_))
   }
 
 //  @GraphQLField
