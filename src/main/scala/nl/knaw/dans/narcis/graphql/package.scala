@@ -19,4 +19,6 @@ import org.json4s.JValue
 
 package object graphql {
   case class GraphQLInput(query: String, variables: Option[JValue], operationName: Option[String])
+
+  case class HttpException(method: String, url: String, code: Int, msg: String) extends Exception(s"$method request failed for url $url with code $code and message '$msg'")
 }

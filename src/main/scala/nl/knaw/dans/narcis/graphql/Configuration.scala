@@ -27,6 +27,7 @@ case class Configuration(version: String,
                          serverPort: Int,
                          profilingThreshold: FiniteDuration,
                          sysvsoiConfig: DatabaseConfiguration,
+                         pidGraphUrl: String
                         )
 
 object Configuration {
@@ -52,6 +53,7 @@ object Configuration {
         properties.getString("sysvsoi.database.username"),
         properties.getString("sysvsoi.database.password"),
       ),
+      pidGraphUrl = properties.getString("pidgraph.url"),
     )
   }
 }

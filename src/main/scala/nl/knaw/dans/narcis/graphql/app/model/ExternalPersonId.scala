@@ -15,21 +15,23 @@
  */
 package nl.knaw.dans.narcis.graphql.app.model
 
-import org.joda.time.LocalDate
+import nl.knaw.dans.narcis.graphql.app.model.PersonIdType.PersonIdType
 
-import scala.collection.mutable.ArrayBuffer
+object PersonIdType extends Enumeration {
+  type PersonIdType = Value
 
-case class Person(personId: PersonId, // for Narcis this is the PRS
-                  name: String,
-                  email: Option[String],
-                  birthday: LocalDate,
-                  place: String,
-                 )
-
-case class InputPerson(name: String,
-                       email: Option[String],
-                       birthday: LocalDate,
-                       place: String,
-                      ) {
-  def toPerson(id: PersonId): Person = Person(id, name, email, birthday, place)
+  // @formatter:off
+  val publication   = Value("publication")
+  val dai_nl        = Value("dai-nl")
+  val isni          = Value("isni")
+  val loop          = Value("loop")
+  val nod_person    = Value("nod-person") // this is actually internal!
+  val orcid         = Value("orcid")
+  val researcherid  = Value("researcherid")
+  val scopus        = Value("scopus")
+  val viaf          = Value("viaf")
+  val ror           = Value("ror")
+  // @formatter:on
 }
+
+case class ExternalPersonId(idType: PersonIdType, idValue: String)

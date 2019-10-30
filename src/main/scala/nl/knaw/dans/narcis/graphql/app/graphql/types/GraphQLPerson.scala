@@ -17,16 +17,18 @@ package nl.knaw.dans.narcis.graphql.app.graphql.types
 
 import nl.knaw.dans.narcis.graphql.app.graphql.DataContext
 import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.WorkResolver
-import nl.knaw.dans.narcis.graphql.app.model.{ Person, PersonId }
+import nl.knaw.dans.narcis.graphql.app.model.PersonIdType.PersonIdType
+import nl.knaw.dans.narcis.graphql.app.model.{Person, PersonId, PersonIdType}
 import org.joda.time.LocalDate
-import sangria.macros.derive.{ GraphQLDescription, GraphQLField, GraphQLName }
-import sangria.schema.{ Context, DeferredValue }
+import sangria.macros.derive.{GraphQLDescription, GraphQLField, GraphQLName}
+import sangria.schema.{Context, DeferredValue}
 
 @GraphQLName("Person")
 @GraphQLDescription("The object containing data about the person.")
 class GraphQLPerson(private val person: Person) {
 
   @GraphQLField
+  @GraphQLName("id")
   @GraphQLDescription("The identifier with which this person is associated.")
   val personId: PersonId = person.personId
 
@@ -46,34 +48,23 @@ class GraphQLPerson(private val person: Person) {
   @GraphQLDescription("The city/town where this person lives.")
   val place: String = person.place
 
-//  @GraphQLField
-//  @GraphQLDescription("")
-//  def externalIds(implicit ctx: Context[DataContext, GraphQLPerson]): Seq[GraphQLExternalPersonId] = {
-//    ???
-//  }
-//
-//  @GraphQLField
-//  @GraphQLDescription("")
-//  def externalId(`type`: ExternalPersonIdType)(implicit ctx: Context[DataContext, GraphQLPerson]): Seq[GraphQLExternalPersonId] = {
-//    ???
-//  }
+  @GraphQLField
+  @GraphQLDescription("The external identifiers of this person")
+  def externalIds(implicit ctx: Context[DataContext, GraphQLPerson]): Seq[GraphQLExternalPersonId] = {
+    // without a resolver
+    ctx.ctx.repo.personDao.getExtIds(person.personId).map(new GraphQLExternalPersonId(_))
+  }
 
-  /*
-    query GetPersonData {
-      person(id: "PRS12345") {
-        id
-        name
-        externalIds {
-          type
-          value
-        }
-        externalId(type: ORCID) {
-          type
-          value
-        }
-      }
-    }
-   */
+  @GraphQLField
+  @GraphQLDescription("External identifiers of a specified type")
+  def externalIdsByType(@GraphQLName("type") idType: PersonIdType)
+                       (implicit ctx: Context[DataContext, GraphQLPerson]): Seq[GraphQLExternalPersonId] = {
+    // also without a resolver
+    // using a filter here, might be suboptimal, maybe do it in the repo or db?
+    ctx.ctx.repo.personDao.getExtIds(person.personId)
+      .filter(eId => eId.idType == idType)
+      .map(new GraphQLExternalPersonId(_))
+  }
 
   // NOTE: toggle between these 2 implementations and see the difference
   //  in the number of interactions with the DAO

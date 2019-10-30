@@ -131,6 +131,12 @@
             <artifactId>json4s-ext_2.12</artifactId>
         </dependency>
 
+        <!-- http -->
+        <dependency>
+            <groupId>org.scalaj</groupId>
+            <artifactId>scalaj-http_2.12</artifactId>
+        </dependency>
+
         <!-- joda -->
         <dependency>
             <groupId>joda-time</groupId>
