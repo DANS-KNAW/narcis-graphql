@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.narcis.graphql.app.repository
 
-import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, InputPerson, Person, PersonId}
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, Person, PersonId}
 
 trait PersonDao {
 
@@ -26,6 +26,4 @@ trait PersonDao {
   def find(ids: Seq[PersonId]): Seq[Person]
 
   def getExtIds(id: PersonId): Seq[ExternalPersonId]
-
-  def store(person: InputPerson): Person
 }

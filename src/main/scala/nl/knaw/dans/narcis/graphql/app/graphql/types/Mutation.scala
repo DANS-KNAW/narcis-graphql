@@ -16,18 +16,11 @@
 package nl.knaw.dans.narcis.graphql.app.graphql.types
 
 import nl.knaw.dans.narcis.graphql.app.graphql.DataContext
-import nl.knaw.dans.narcis.graphql.app.model.{ InputPerson, InputWork, PersonId }
+import nl.knaw.dans.narcis.graphql.app.model.{InputWork, PersonId }
 import sangria.macros.derive.{ GraphQLDescription, GraphQLField }
 import sangria.schema.Context
 
 class Mutation {
-
-  @GraphQLField
-  @GraphQLDescription("Add a person to the service.")
-  def addPerson(@GraphQLDescription("The person to be inserted.") person: InputPerson)
-               (implicit ctx: Context[DataContext, Unit]): GraphQLPerson = {
-    new GraphQLPerson(ctx.ctx.repo.personDao.store(person))
-  }
 
   @GraphQLField
   @GraphQLDescription("Add a work together with it's authors.")

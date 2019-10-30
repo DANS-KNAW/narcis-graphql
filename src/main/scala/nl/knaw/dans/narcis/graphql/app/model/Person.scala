@@ -22,14 +22,7 @@ import scala.collection.mutable.ArrayBuffer
 case class Person(personId: PersonId, // for Narcis this is the PRS
                   name: String,
                   email: Option[String],
+                  // demo stuff below
                   birthday: LocalDate,
                   place: String,
                  )
-
-case class InputPerson(name: String,
-                       email: Option[String],
-                       birthday: LocalDate,
-                       place: String,
-                      ) {
-  def toPerson(id: PersonId): Person = Person(id, name, email, birthday, place)
-}

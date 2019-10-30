@@ -17,7 +17,7 @@ package nl.knaw.dans.narcis.graphql.app.repository.demo_impl
 
 import java.util.UUID
 
-import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, InputPerson, Person, PersonId, PersonIdType}
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, Person, PersonId, PersonIdType}
 import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
@@ -48,15 +48,5 @@ class DemoPersonDao(initalInput: Map[PersonId, Person] = Map.empty) extends Pers
     val fakeId = new ExternalPersonId(PersonIdType.nod_person, "fake-id")
     List[ExternalPersonId](fakeId, fakeId) // the same fake twice to see if we get a 'distinct' result
     //ArrayBuffer[ExternalPersonId]()// just empty
-  }
-
-  override def store(person: InputPerson): Person = {
-    trace(person)
-    val personId = UUID.randomUUID().toString
-    val p = person.toPerson(personId)
-
-    repo += (personId -> p)
-
-    p
   }
 }

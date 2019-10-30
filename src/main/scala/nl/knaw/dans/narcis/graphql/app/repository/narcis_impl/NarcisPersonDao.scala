@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.narcis.graphql.app.repository.narcis_impl
 
-import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, InputPerson, Person, PersonId}
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, Person, PersonId}
 import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
 import nl.knaw.dans.narcis.graphql.app.repository.demo_impl.DemoPersonDao
 import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.PidGraphpersonDao
@@ -40,6 +40,4 @@ class NarcisPersonDao(vsoi: VsoiPersonDao,
     // merge them, plus deduplicate... only works if normalised in the same way
     (extIdsFromVsoi.toSet ++ extIdsFromPidgraph.toSet).toSeq
   }
-
-  override def store(person: InputPerson): Person = ???
 }
