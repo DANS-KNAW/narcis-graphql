@@ -19,7 +19,7 @@ import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.Command.configuration
 import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, InputPerson, Person, PersonId, PersonIdType}
 import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
-import nl.knaw.dans.narcis.graphql.app.rest.{GraphPerson, GraphPersonPid, HttpWorker, PidGraphData}
+import nl.knaw.dans.narcis.graphql.app.rest.{GraphPerson, GraphPersonPid, HttpWorker, PersonPidType, PidGraphData}
 import org.apache.commons.lang.NotImplementedException
 import org.json4s.Formats
 
@@ -43,7 +43,7 @@ class PidGraphpersonDao extends PersonDao with DebugEnhancedLogging {
     // this is what we can get additional information on here
     // get data from the pidgraph rest api
     val dataFetcher = new HttpWorker(configuration.version)
-    val pidGraphPerson = dataFetcher.getJsonData[GraphPerson](s"https://test.pidgraph.narcis.nl/person/$id")
+    val pidGraphPerson = dataFetcher.getJsonData[GraphPerson](s"${configuration.pidGraphUrl}/person/$id")
     // extract ext ids
     pidGraphPerson match {
       case Success(pgd) => {
@@ -60,21 +60,21 @@ class PidGraphpersonDao extends PersonDao with DebugEnhancedLogging {
     trace(pgPid)
 
     val idType = pgPid.pidType match {
-      case nl.knaw.dans.narcis.graphql.app.rest.PersonPidType.orcid => PersonIdType.orcid
-      case nl.knaw.dans.narcis.graphql.app.rest.PersonPidType.dai_nl => PersonIdType.dai_nl
-      case nl.knaw.dans.narcis.graphql.app.rest.PersonPidType.isni => PersonIdType.isni
-      case nl.knaw.dans.narcis.graphql.app.rest.PersonPidType.loop => PersonIdType.loop
-      case nl.knaw.dans.narcis.graphql.app.rest.PersonPidType.nod_person => PersonIdType.nod_person
-      case nl.knaw.dans.narcis.graphql.app.rest.PersonPidType.publication => PersonIdType.publication
-      case nl.knaw.dans.narcis.graphql.app.rest.PersonPidType.researcherid => PersonIdType.researcherid
-      case nl.knaw.dans.narcis.graphql.app.rest.PersonPidType.scopus => PersonIdType.scopus
-      case nl.knaw.dans.narcis.graphql.app.rest.PersonPidType.viaf => PersonIdType.viaf
+      case PersonPidType.orcid => PersonIdType.orcid
+      case PersonPidType.dai_nl => PersonIdType.dai_nl
+      case PersonPidType.isni => PersonIdType.isni
+      case PersonPidType.loop => PersonIdType.loop
+      case PersonPidType.nod_person => PersonIdType.nod_person
+      case PersonPidType.publication => PersonIdType.publication
+      case PersonPidType.researcherid => PersonIdType.researcherid
+      case PersonPidType.scopus => PersonIdType.scopus
+      case PersonPidType.viaf => PersonIdType.viaf
       case _ =>
         logger.warn(s"No mapping implemented for Person Pid type ${pgPid.pidType}")
         throw new NotImplementedException(s"No mapping implemented for Person Pid type ${pgPid.pidType}")
     }
 
-    new ExternalPersonId(idType, pgPid.value) // assume pidgraph is normalized
+    new ExternalPersonId(idType, pgPid.value) // assume pidgraph value is normalized
   }
 
   override def store(person: InputPerson): Person = ???

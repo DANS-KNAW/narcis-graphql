@@ -31,7 +31,8 @@ class ReadmeSpec extends FlatSpec with Matchers with CustomMatchers {
     version = "my-version",
     serverPort = 12345,
     profilingThreshold = 12 seconds,
-    sysvsoiConfig = DatabaseConfiguration("", "")
+    sysvsoiConfig = DatabaseConfiguration("", ""),
+    pidGraphUrl = ""
   )
   private val clo = new CommandLineOptions(Array[String](), configuration) {
     // avoids System.exit() in case of invalid arguments or "--help"
