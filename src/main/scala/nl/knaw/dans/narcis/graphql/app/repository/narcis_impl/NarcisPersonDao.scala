@@ -18,10 +18,11 @@ package nl.knaw.dans.narcis.graphql.app.repository.narcis_impl
 import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, InputPerson, Person, PersonId}
 import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
 import nl.knaw.dans.narcis.graphql.app.repository.demo_impl.DemoPersonDao
+import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.PidGraphpersonDao
 import nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl.VsoiPersonDao
 
 class NarcisPersonDao(vsoi: VsoiPersonDao,
-                      demo: DemoPersonDao,
+                      pidgraph: PidGraphpersonDao
                      ) extends PersonDao {
 
   // merge information, but start with VSOI and add only complementary non conflicting info from other sources.
@@ -34,9 +35,10 @@ class NarcisPersonDao(vsoi: VsoiPersonDao,
 
   override def getExtIds(id: PersonId): Seq[ExternalPersonId] = {
     val extIdsFromVsoi = vsoi.getExtIds(id)
-    val extIdsFromDemo = demo.getExtIds(id)
+    val extIdsFromPidgraph = pidgraph.getExtIds(id)
+
     // merge them, plus deduplicate... only works if normalised in the same way
-    (extIdsFromVsoi.toSet ++ extIdsFromDemo.toSet).toSeq
+    (extIdsFromVsoi.toSet ++ extIdsFromPidgraph.toSet).toSeq
   }
 
   override def store(person: InputPerson): Person = ???
