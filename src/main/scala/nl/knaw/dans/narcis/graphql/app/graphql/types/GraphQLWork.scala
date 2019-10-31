@@ -17,9 +17,10 @@ package nl.knaw.dans.narcis.graphql.app.graphql.types
 
 import nl.knaw.dans.narcis.graphql.app.graphql.DataContext
 import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.PersonResolver
-import nl.knaw.dans.narcis.graphql.app.model.{ Work, WorkId }
-import sangria.macros.derive.{ GraphQLDescription, GraphQLField, GraphQLName }
-import sangria.schema.{ Context, DeferredValue }
+import nl.knaw.dans.narcis.graphql.app.model.{Work, WorkId}
+import org.joda.time.LocalDate
+import sangria.macros.derive.{GraphQLDescription, GraphQLField, GraphQLName}
+import sangria.schema.{Context, DeferredValue}
 
 @GraphQLName("Work")
 @GraphQLDescription("The object containing data about the work.")
@@ -32,6 +33,10 @@ class GraphQLWork(private val work: Work) {
   @GraphQLField
   @GraphQLDescription("The work's title.")
   val title: String = work.title
+
+  @GraphQLField
+  @GraphQLDescription("The date this work was published or issued.")
+  val date: LocalDate = work.date
 
   // NOTE: toggle between these 2 implementations and see the difference
   //  in the number of interactions with the DAO

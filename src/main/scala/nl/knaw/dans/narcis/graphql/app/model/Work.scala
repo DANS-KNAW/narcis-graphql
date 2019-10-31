@@ -15,11 +15,15 @@
  */
 package nl.knaw.dans.narcis.graphql.app.model
 
+import org.joda.time.LocalDate
+
 case class Work(id: WorkId,
                 title: String,
+                date: LocalDate,
                )
 
 case class InputWork(title: String,
+                     date: LocalDate,
                     ) {
-  def toWork(id: WorkId): Work = Work(id, title)
+  def toWork(id: WorkId): Work = Work(id, title, date)
 }

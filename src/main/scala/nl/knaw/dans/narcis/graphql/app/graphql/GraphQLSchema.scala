@@ -89,18 +89,10 @@ object GraphQLSchema {
   implicit val GraphQLPersonType: ObjectType[DataContext, GraphQLPerson] = deriveObjectType[DataContext, GraphQLPerson]()
 
   implicit val GraphQLWorkType: ObjectType[DataContext, GraphQLWork] = deriveObjectType[DataContext, GraphQLWork]()
-  implicit val InputWorkType: InputObjectType[InputWork] = deriveInputObjectType[InputWork](
-    InputObjectTypeDescription("The work to be inserted."),
-    DocumentInputField("title", "The work's title."),
-  )
-  implicit val InputWorkFromInput: FromInput[InputWork] = fromInput(ad => InputWork(
-    title = ad("title").asInstanceOf[String],
-  ))
 
   implicit val QueryType: ObjectType[DataContext, Unit] = deriveContextObjectType[DataContext, Query, Unit](_.query)
-  implicit val MutationType: ObjectType[DataContext, Unit] = deriveContextObjectType[DataContext, Mutation, Unit](_.mutation)
 
-  val schema: Schema[DataContext, Unit] = Schema[DataContext, Unit](QueryType, mutation = Option(MutationType))
+  val schema: Schema[DataContext, Unit] = Schema[DataContext, Unit](QueryType)
   val deferredResolver: DeferredResolver[DataContext] = DeferredResolver.fetchers(
     PersonResolver.byIdFetcher,
     WorkResolver.byIdFetcher,

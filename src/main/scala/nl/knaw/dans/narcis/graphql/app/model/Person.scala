@@ -27,7 +27,4 @@ case class Person(personId: PersonId, // for Narcis this is the PRS
                   initials: Option[String]=None,
                   prefix: Option[String]=None,
                   titles: Option[String]=None,
-                  // demo stuff below
-                  birthday: LocalDate,
-                  place: String,
                  )

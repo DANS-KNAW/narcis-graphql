@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl
 
+import java.text.SimpleDateFormat
 import java.util.UUID
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
@@ -23,6 +24,7 @@ import nl.knaw.dans.narcis.graphql.app.model.{InputWork, PersonId, Work, WorkId}
 import nl.knaw.dans.narcis.graphql.app.repository.WorkDao
 import nl.knaw.dans.narcis.graphql.app.rest.{GraphWork, HttpWorker, PidGraphData}
 import org.json4s.Formats
+import org.joda.time.LocalDate
 
 import scala.util.{Failure, Success, Try}
 
@@ -36,6 +38,9 @@ class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
   override def getByPersonId(id: PersonId): Option[Seq[Work]] = {
     trace(id)
 
+    // date from pidgraph is formatted yyyyMMdd
+    val pgDateFormat = new SimpleDateFormat("yyyyMMdd")
+
     // get data from the pidgraph rest api
     val url = s"${configuration.pidGraphUrl}/person/$id/work"
     val dataFetcher = new HttpWorker(configuration.version)
@@ -43,7 +48,7 @@ class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
 
     pidGraphWorks match {
       case Success(pgWorks) => {
-        Some(pgWorks.map(pgWork => Work(pgWork.id, pgWork.title)))
+        Some(pgWorks.map(pgWork => Work(pgWork.id, pgWork.title, new LocalDate(pgDateFormat.parse(pgWork.date)))))
       }
       case Failure(exception) => {
         logger.warn(s"Failed getting works for person $id from $url, error: ${exception.getMessage}")
@@ -56,11 +61,8 @@ class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
   }
 
   override def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])] = {
-    ids.map(id => (id, getByPersonId(id))).filter {
-      case (id, worksOpt) => worksOpt.isDefined
-    }.map{
-      case (id, worksOpt) => (id,worksOpt.get)
-    }
+    ids.map(id => (id, getByPersonId(id)))
+      .collect { case (id, Some(works)) => (id, works) }
   }
 
   override def store(personIds: Seq[PersonId], work: InputWork): Work = ???

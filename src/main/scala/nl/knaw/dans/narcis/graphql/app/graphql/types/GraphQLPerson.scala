@@ -60,15 +60,6 @@ class GraphQLPerson(private val person: Person) {
   @GraphQLDescription("The person's titles.")
   val titles: Option[String] = person.titles
 
-  // demo fields below
-
-  @GraphQLField
-  @GraphQLDescription("The date the person was born.")
-  val birthday: LocalDate = person.birthday
-
-  @GraphQLField
-  @GraphQLDescription("The city/town where this person lives.")
-  val place: String = person.place
 
   @GraphQLField
   @GraphQLDescription("The external identifiers of this person")

@@ -51,7 +51,7 @@ class VsoiDb() extends DebugEnhancedLogging {
         val prefix = Option(resultSet.getString("voorvoegsel"))
         val titles = Option(resultSet.getString("titulatuur"))
 
-        Option(Person(prsId, name, email, url, givenname, initials, prefix, titles, new LocalDate(1990, 1, 1), "London"))
+        Option(Person(prsId, name, email, url, givenname, initials, prefix, titles))
       } else {
         Option.empty
       }
