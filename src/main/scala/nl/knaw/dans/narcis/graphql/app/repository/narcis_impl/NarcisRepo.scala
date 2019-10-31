@@ -20,18 +20,20 @@ import java.sql.Connection
 import nl.knaw.dans.narcis.graphql.app.database.VsoiDb
 import nl.knaw.dans.narcis.graphql.app.repository.Repository
 import nl.knaw.dans.narcis.graphql.app.repository.demo_impl.{DemoPersonDao, DemoWorkDao}
-import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.PidGraphpersonDao
+import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.{PidGraphWorkDao, PidGraphPersonDao}
 import nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl.VsoiPersonDao
 
+//  Note that the 'Narcis' Dao's combine the data from various sources
 class NarcisRepo(vsoiDb: VsoiDb)(implicit connection: Connection) {
 
   def repository: Repository = {
     val vsoiPersonDao = new VsoiPersonDao(vsoiDb)
-    val pidGraphPersonDao = new PidGraphpersonDao()
+    val pidGraphPersonDao = new PidGraphPersonDao()
+    val pidGraphWorkDao = new PidGraphWorkDao()
 
     Repository(
       new NarcisPersonDao(vsoiPersonDao, pidGraphPersonDao),
-      new DemoWorkDao() // TODO replace with NarcisWorkDao, which combines the data from various sources
+      new NarcisWorkDao(pidGraphWorkDao)
     )
   }
 }

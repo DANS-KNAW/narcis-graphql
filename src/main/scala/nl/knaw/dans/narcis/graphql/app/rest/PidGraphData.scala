@@ -116,6 +116,7 @@ case class GraphPerson(
                       )
 
 case class GraphWork(
+                      id: String,
                       title: String, // Work.title
                       entitytype: WorkType,
                       date: String, // publication date maybe DateTime?

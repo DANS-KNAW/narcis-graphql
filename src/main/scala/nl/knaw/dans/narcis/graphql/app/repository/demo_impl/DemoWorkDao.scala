@@ -56,7 +56,7 @@ class DemoWorkDao(initialWorks: Map[WorkId, Work] = Map.empty,
 
   override def store(personIds: Seq[PersonId], work: InputWork): Work = {
     trace(personIds)
-    val workId = UUID.randomUUID()
+    val workId = UUID.randomUUID().toString
     val w = work.toWork(workId)
 
     workRepo += (workId -> w)

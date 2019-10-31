@@ -25,7 +25,7 @@ import org.json4s.Formats
 
 import scala.util.{Failure, Success, Try}
 
-class PidGraphpersonDao extends PersonDao with DebugEnhancedLogging {
+class PidGraphPersonDao extends PersonDao with DebugEnhancedLogging {
   implicit val formats: Formats = PidGraphData.jsonFormats
 
   override def getAll: Seq[Person] = ???

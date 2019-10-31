@@ -29,10 +29,10 @@ class DemoRepo {
   private val pId4 = "00000000-0000-0000-0000-000000000004"
   private val pId5 = "00000000-0000-0000-0000-000000000005"
 
-  private val wId1 = UUID.fromString("10000000-0000-0000-0000-000000000000")
-  private val wId2 = UUID.fromString("20000000-0000-0000-0000-000000000000")
-  private val wId3 = UUID.fromString("30000000-0000-0000-0000-000000000000")
-  private val wId4 = UUID.fromString("40000000-0000-0000-0000-000000000000")
+  private val wId1 = "10000000-0000-0000-0000-000000000000"
+  private val wId2 ="20000000-0000-0000-0000-000000000000"
+  private val wId3 = "30000000-0000-0000-0000-000000000000"
+  private val wId4 = "40000000-0000-0000-0000-000000000000"
   
   private val personDao: PersonDao = new DemoPersonDao(Map(
     pId1 -> Person(pId1, "Alice", email=None, None, None, None, None, None, new LocalDate(1990, 1, 1), "London"),
