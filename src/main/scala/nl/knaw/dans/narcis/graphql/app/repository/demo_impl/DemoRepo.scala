@@ -35,11 +35,11 @@ class DemoRepo {
   private val wId4 = UUID.fromString("40000000-0000-0000-0000-000000000000")
   
   private val personDao: PersonDao = new DemoPersonDao(Map(
-    pId1 -> Person(pId1, "Alice", email=None, new LocalDate(1990, 1, 1), "London"),
-    pId2 -> Person(pId2, "Bob", email=None, new LocalDate(1992, 2, 2), "Berlin"),
-    pId3 -> Person(pId3, "Charlie", email=None, new LocalDate(1994, 3, 3), "Paris"),
-    pId4 -> Person(pId4, "Dave", email=None, new LocalDate(1996, 4, 4), "Rome"),
-    pId5 -> Person(pId5, "Eve", email=None, new LocalDate(1998, 5, 5), "The Hague"),
+    pId1 -> Person(pId1, "Alice", email=None, None, None, None, None, None, new LocalDate(1990, 1, 1), "London"),
+    pId2 -> Person(pId2, "Bob", email=None, None, None, None, None, None, new LocalDate(1992, 2, 2), "Berlin"),
+    pId3 -> Person(pId3, "Charlie", email=None, None, None, None, None, None, new LocalDate(1994, 3, 3), "Paris"),
+    pId4 -> Person(pId4, "Dave", email=None, None, None, None, None, None, new LocalDate(1996, 4, 4), "Rome"),
+    pId5 -> Person(pId5, "Eve", email=None, None, None, None, None, None, new LocalDate(1998, 5, 5), "The Hague"),
   ))
   private val workDao: WorkDao = new DemoWorkDao(
     initialWorks = Map(

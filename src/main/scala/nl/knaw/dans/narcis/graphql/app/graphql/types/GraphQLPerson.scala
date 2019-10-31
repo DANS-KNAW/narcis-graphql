@@ -41,6 +41,28 @@ class GraphQLPerson(private val person: Person) {
   val email: Option[String] = person.email
 
   @GraphQLField
+  @GraphQLDescription("The person's URL.")
+  val url: Option[String] = person.url
+
+  @GraphQLField
+  @GraphQLDescription("The person's givenname.")
+  val givenname: Option[String] = person.givenname
+
+  @GraphQLField
+  @GraphQLDescription("The person's initials.")
+  val initials: Option[String] = person.initials
+
+  @GraphQLField
+  @GraphQLDescription("The person's name prefix.")
+  val prefix: Option[String] = person.prefix
+
+  @GraphQLField
+  @GraphQLDescription("The person's titles.")
+  val titles: Option[String] = person.titles
+
+  // demo fields below
+
+  @GraphQLField
   @GraphQLDescription("The date the person was born.")
   val birthday: LocalDate = person.birthday
 

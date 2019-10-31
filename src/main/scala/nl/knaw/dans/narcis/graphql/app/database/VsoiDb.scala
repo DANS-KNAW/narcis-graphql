@@ -32,7 +32,7 @@ class VsoiDb() extends DebugEnhancedLogging {
     trace(prsId)
 
     // TODO get all info
-    val query = "SELECT achternaam, email FROM persoon WHERE pers_id=?;"
+    val query = "SELECT achternaam, email, url, voornaam, initialen, voorvoegsel, titulatuur FROM persoon WHERE pers_id=?;"
     val managedResultSet: ManagedResource[ResultSet] = for {
           prepStatement <- managed(connection.prepareStatement(query))
           _ = prepStatement.setString(1, prsId)
@@ -45,7 +45,13 @@ class VsoiDb() extends DebugEnhancedLogging {
         val name = resultSet.getString("achternaam")
         val email = Option(resultSet.getString("email"))
         logger.info(s"Person info from database = name: $name, email: $email")
-        Option(Person(prsId, name, email, new LocalDate(1990, 1, 1), "London"))
+        val url = Option(resultSet.getString("url"))
+        val givenname = Option(resultSet.getString("voornaam"))
+        val initials = Option(resultSet.getString("initialen"))
+        val prefix = Option(resultSet.getString("voorvoegsel"))
+        val titles = Option(resultSet.getString("titulatuur"))
+
+        Option(Person(prsId, name, email, url, givenname, initials, prefix, titles, new LocalDate(1990, 1, 1), "London"))
       } else {
         Option.empty
       }

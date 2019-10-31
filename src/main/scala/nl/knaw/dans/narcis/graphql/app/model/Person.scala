@@ -20,8 +20,13 @@ import org.joda.time.LocalDate
 import scala.collection.mutable.ArrayBuffer
 
 case class Person(personId: PersonId, // for Narcis this is the PRS
-                  name: String,
-                  email: Option[String],
+                  name: String, // the surname (last name)
+                  email: Option[String]=None,
+                  url: Option[String]=None,
+                  givenname: Option[String]=None, // first name
+                  initials: Option[String]=None,
+                  prefix: Option[String]=None,
+                  titles: Option[String]=None,
                   // demo stuff below
                   birthday: LocalDate,
                   place: String,
