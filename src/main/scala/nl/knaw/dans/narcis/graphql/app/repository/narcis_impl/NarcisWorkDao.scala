@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.narcis.graphql.app.repository.narcis_impl
 
-import nl.knaw.dans.narcis.graphql.app.model.{InputWork, PersonId, Work, WorkId}
+import nl.knaw.dans.narcis.graphql.app.model.{PersonId, Work, WorkId}
 import nl.knaw.dans.narcis.graphql.app.repository.WorkDao
 import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.PidGraphWorkDao
 
@@ -31,8 +31,6 @@ class NarcisWorkDao(pidgraph: PidGraphWorkDao) extends WorkDao {
   override def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])] = {
     pidgraph.getByPersonId(ids)
   }
-
-  override def store(personIds: Seq[PersonId], work: InputWork): Work = ???
 
   override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = ???
 

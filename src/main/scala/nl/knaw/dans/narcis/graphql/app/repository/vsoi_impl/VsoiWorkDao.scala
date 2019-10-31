@@ -16,7 +16,7 @@
 package nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import nl.knaw.dans.narcis.graphql.app.model.{InputWork, PersonId, Work, WorkId}
+import nl.knaw.dans.narcis.graphql.app.model.{ PersonId, Work, WorkId}
 import nl.knaw.dans.narcis.graphql.app.repository.WorkDao
 
 class VsoiWorkDao extends WorkDao with DebugEnhancedLogging {
@@ -27,8 +27,6 @@ class VsoiWorkDao extends WorkDao with DebugEnhancedLogging {
   override def getByPersonId(id: PersonId): Option[Seq[Work]] = ???
 
   override def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])] = ???
-
-  override def store(personIds: Seq[PersonId], work: InputWork): Work = ???
 
   override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = ???
 

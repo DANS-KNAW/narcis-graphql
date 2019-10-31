@@ -17,7 +17,7 @@ package nl.knaw.dans.narcis.graphql.app.graphql
 
 import java.sql.Connection
 
-import nl.knaw.dans.narcis.graphql.app.graphql.types.{ Mutation, Query }
+import nl.knaw.dans.narcis.graphql.app.graphql.types.{ Query }
 import nl.knaw.dans.narcis.graphql.app.repository.Repository
 
 import scala.concurrent.ExecutionContext
@@ -25,7 +25,6 @@ import scala.concurrent.ExecutionContext
 class DataContext(connection: Connection,
                   repository: Connection => Repository,
                   val query: Query,
-                  val mutation: Mutation,
                  )(implicit val executionContext: ExecutionContext) {
 
   lazy val repo: Repository = repository(connection)
@@ -34,6 +33,6 @@ class DataContext(connection: Connection,
 object DataContext {
   def apply(connection: Connection, repository: Connection => Repository)
            (implicit executionContext: ExecutionContext): DataContext = {
-    new DataContext(connection, repository, new Query, new Mutation)(executionContext)
+    new DataContext(connection, repository, new Query)(executionContext)
   }
 }

@@ -18,9 +18,9 @@ package nl.knaw.dans.narcis.graphql.app.graphql
 import java.util.UUID
 
 import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{PersonResolver, WorkResolver}
-import nl.knaw.dans.narcis.graphql.app.graphql.types.{GraphQLExternalPersonId, GraphQLPerson, GraphQLWork, Mutation, Query}
+import nl.knaw.dans.narcis.graphql.app.graphql.types.{GraphQLExternalPersonId, GraphQLPerson, GraphQLWork, Query}
 import nl.knaw.dans.narcis.graphql.app.model.PersonIdType.PersonIdType
-import nl.knaw.dans.narcis.graphql.app.model.{InputWork, PersonIdType}
+import nl.knaw.dans.narcis.graphql.app.model.{PersonIdType}
 import org.joda.time.LocalDate
 import sangria.ast.StringValue
 import sangria.execution.deferred.DeferredResolver

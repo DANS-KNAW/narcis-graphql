@@ -20,7 +20,7 @@ import java.util.UUID
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.Command.configuration
-import nl.knaw.dans.narcis.graphql.app.model.{InputWork, PersonId, Work, WorkId}
+import nl.knaw.dans.narcis.graphql.app.model.{ PersonId, Work, WorkId}
 import nl.knaw.dans.narcis.graphql.app.repository.WorkDao
 import nl.knaw.dans.narcis.graphql.app.rest.{GraphWork, HttpWorker, PidGraphData}
 import org.json4s.Formats
@@ -64,8 +64,6 @@ class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
     ids.map(id => (id, getByPersonId(id)))
       .collect { case (id, Some(works)) => (id, works) }
   }
-
-  override def store(personIds: Seq[PersonId], work: InputWork): Work = ???
 
   override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = ???
 

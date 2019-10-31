@@ -20,10 +20,5 @@ import org.joda.time.LocalDate
 case class Work(id: WorkId,
                 title: String,
                 date: LocalDate,
+               // TODO add work type
                )
-
-case class InputWork(title: String,
-                     date: LocalDate,
-                    ) {
-  def toWork(id: WorkId): Work = Work(id, title, date)
-}

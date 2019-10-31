@@ -17,7 +17,7 @@ package nl.knaw.dans.narcis.graphql.app.repository.demo_impl
 
 import java.util.UUID
 
-import nl.knaw.dans.narcis.graphql.app.model.{ InputWork, PersonId, Work, WorkId }
+import nl.knaw.dans.narcis.graphql.app.model.{ PersonId, Work, WorkId }
 import nl.knaw.dans.narcis.graphql.app.repository.WorkDao
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
@@ -52,21 +52,6 @@ class DemoWorkDao(initialWorks: Map[WorkId, Work] = Map.empty,
   override def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])] = {
     trace(ids)
     ids.flatMap(personId => findWorks(personId).map(personId -> _))
-  }
-
-  override def store(personIds: Seq[PersonId], work: InputWork): Work = {
-    trace(personIds)
-    val workId = UUID.randomUUID().toString
-    val w = work.toWork(workId)
-
-    workRepo += (workId -> w)
-    for (personId <- personIds) {
-      val presentIds = personWorkRepo.getOrElseUpdate(personId, List.empty)
-      val ids = workId :: presentIds
-      personWorkRepo.update(personId, ids)
-    }
-
-    w
   }
 
   override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = {

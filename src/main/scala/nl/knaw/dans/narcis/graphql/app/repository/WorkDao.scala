@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.narcis.graphql.app.repository
 
-import nl.knaw.dans.narcis.graphql.app.model.{ InputWork, PersonId, Work, WorkId }
+import nl.knaw.dans.narcis.graphql.app.model.{PersonId, Work, WorkId }
 
 trait WorkDao {
 
@@ -26,8 +26,6 @@ trait WorkDao {
   def getByPersonId(id: PersonId): Option[Seq[Work]]
 
   def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])]
-
-  def store(personIds: Seq[PersonId], work: InputWork): Work
 
   def getPersonsByWork(id: WorkId): Option[Seq[PersonId]]
 
