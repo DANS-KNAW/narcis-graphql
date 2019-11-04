@@ -17,8 +17,8 @@ package nl.knaw.dans.narcis.graphql.app.repository.demo_impl
 
 import java.util.UUID
 
-import nl.knaw.dans.narcis.graphql.app.model.{ Person, Work }
-import nl.knaw.dans.narcis.graphql.app.repository.{ PersonDao, Repository, WorkDao }
+import nl.knaw.dans.narcis.graphql.app.model.{Person, Work, WorkType}
+import nl.knaw.dans.narcis.graphql.app.repository.{PersonDao, Repository, WorkDao}
 import org.joda.time.LocalDate
 
 class DemoRepo {
@@ -43,10 +43,10 @@ class DemoRepo {
   ))
   private val workDao: WorkDao = new DemoWorkDao(
     initialWorks = Map(
-      wId1 -> Work(wId1, "title1", new LocalDate(1990, 1, 1)),
-      wId2 -> Work(wId2, "title2", new LocalDate(1992, 2, 2)),
-      wId3 -> Work(wId3, "title3", new LocalDate(1994, 3, 3)),
-      wId4 -> Work(wId4, "title4", new LocalDate(1996, 4, 4)),
+      wId1 -> Work(wId1, "title1", new LocalDate(1990, 1, 1), WorkType.other),
+      wId2 -> Work(wId2, "title2", new LocalDate(1992, 2, 2), WorkType.other),
+      wId3 -> Work(wId3, "title3", new LocalDate(1994, 3, 3), WorkType.other),
+      wId4 -> Work(wId4, "title4", new LocalDate(1996, 4, 4), WorkType.other),
     ),
     initialLinks = Map(
       pId1 -> List(wId1, wId3),

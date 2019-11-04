@@ -20,9 +20,11 @@ import java.util.UUID
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.Command.configuration
-import nl.knaw.dans.narcis.graphql.app.model.{ PersonId, Work, WorkId}
+import nl.knaw.dans.narcis.graphql.app.model.WorkType.WorkType
+import nl.knaw.dans.narcis.graphql.app.rest.{GraphWork, GraphWorkPid, HttpWorker, PidGraphData, WorkPidType, WorkType => GraphWorkType}
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalWorkId, PersonId, Work, WorkId, WorkIdType, WorkType}
 import nl.knaw.dans.narcis.graphql.app.repository.WorkDao
-import nl.knaw.dans.narcis.graphql.app.rest.{GraphWork, HttpWorker, PidGraphData}
+import org.apache.commons.lang.NotImplementedException
 import org.json4s.Formats
 import org.joda.time.LocalDate
 
@@ -48,7 +50,13 @@ class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
 
     pidGraphWorks match {
       case Success(pgWorks) => {
-        Some(pgWorks.map(pgWork => Work(pgWork.id, pgWork.title, new LocalDate(pgDateFormat.parse(pgWork.date)))))
+
+        Some(pgWorks.map(pgWork => Work(pgWork.id,
+                                        pgWork.title,
+                                        new LocalDate(pgDateFormat.parse(pgWork.date)),
+                                        WorkTypeFromPidGraphWorkType(pgWork.entitytype))
+          )
+        )
       }
       case Failure(exception) => {
         logger.warn(s"Failed getting works for person $id from $url, error: ${exception.getMessage}")
@@ -68,4 +76,79 @@ class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
   override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = ???
 
   override def getPersonsByWork(ids: Seq[WorkId]): Seq[(WorkId, Seq[PersonId])] = ???
+
+  def WorkTypeFromPidGraphWorkType(pgWorkType: GraphWorkType.WorkType): WorkType = {
+    pgWorkType match {
+      case  GraphWorkType.publication => WorkType.publication
+      case  GraphWorkType.journalArticle => WorkType.journalArticle
+      case  GraphWorkType.dataset => WorkType.dataset
+      case  GraphWorkType.software => WorkType.software
+      case  GraphWorkType.conferencePaper => WorkType.conferencePaper
+      case  GraphWorkType.book => WorkType.book
+      case  GraphWorkType.bookChapter => WorkType.bookChapter
+      case  GraphWorkType.dataSet => WorkType.dataSet
+      case  GraphWorkType.report => WorkType.report
+      case  GraphWorkType.dissertation => WorkType.dissertation
+      case  GraphWorkType.workingPaper => WorkType.workingPaper
+      case  GraphWorkType.bookReview => WorkType.bookReview
+      case  GraphWorkType.bookPart => WorkType.bookPart
+      case  GraphWorkType.annotation => WorkType.annotation
+      case  GraphWorkType.lecture => WorkType.lecture
+      case  GraphWorkType.conferenceObject => WorkType.conferenceObject
+      case  GraphWorkType.conferenceProceedings => WorkType.conferenceProceedings
+      case  GraphWorkType.patent => WorkType.patent
+      case  GraphWorkType.preprint => WorkType.preprint
+      case  GraphWorkType.review => WorkType.review
+      case  GraphWorkType.conferenceItem => WorkType.conferenceItem
+      case  GraphWorkType.masterThesis => WorkType.masterThesis
+      case  GraphWorkType.studentThesis => WorkType.studentThesis
+      case  GraphWorkType.bachelorThesis => WorkType.bachelorThesis
+      case  GraphWorkType.technicaldocumentation => WorkType.technicaldocumentation
+      case  GraphWorkType.other => WorkType.other
+      case  _ => WorkType.other
+    }
+  }
+
+  def ExternalWorkIdFromPidGraphWorkId(pgWorkId: GraphWorkPid) : Try[ExternalWorkId] = Try {
+    val workIdType = pgWorkId.pidType match {
+      case  WorkPidType.arxiv => WorkIdType.arxiv
+      case  WorkPidType.doi  => WorkIdType.doi
+      case  WorkPidType.eid => WorkIdType.eid
+      case  WorkPidType.handle => WorkIdType.handle
+      case  WorkPidType.narcis_oaipub => WorkIdType.narcis_oaipub
+      case  WorkPidType.pmc => WorkIdType.pmc
+      case  WorkPidType.pmid => WorkIdType.pmid
+      case  WorkPidType.purl => WorkIdType.purl
+      case  WorkPidType.urn_nbn => WorkIdType.urn_nbn
+      case  WorkPidType.wosuid => WorkIdType.wosuid
+      case  _ => {
+        logger.warn(s"No mapping implemented for Work Id type ${pgWorkId.pidType}")
+        throw new NotImplementedException(s"No mapping implemented for Work Id type ${pgWorkId.pidType}")
+      }
+    }
+
+    new ExternalWorkId(workIdType, pgWorkId.value) // assume pidgraph value is normalized
+  }
+
+  override def getExtIds(id: WorkId): Seq[ExternalWorkId] = {
+    trace(id)
+
+    // just return some fake, for testing
+    //List(ExternalWorkId(WorkIdType.wosuid, "fake-work-id-value"))
+
+    // this is what we can get additional information on here
+    // get data from the pidgraph rest api
+    val dataFetcher = new HttpWorker(configuration.version)
+    val pidGraphWork = dataFetcher.getJsonData[GraphWork](s"${configuration.pidGraphUrl}/work/$id")
+    // extract ext ids
+    pidGraphWork match {
+      case Success(pgd) => {
+        pgd.pids.map(pgPid => ExternalWorkIdFromPidGraphWorkId(pgPid)).flatMap(_.toOption)
+      }
+      case Failure(exception) => {
+        logger.warn(s"Failed getting external identifiers for work $id, error: ${exception.getMessage}")
+        Seq.empty[ExternalWorkId]
+      }
+    }
+  }
 }

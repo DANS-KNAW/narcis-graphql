@@ -18,9 +18,9 @@ package nl.knaw.dans.narcis.graphql.app.graphql
 import java.util.UUID
 
 import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{PersonResolver, WorkResolver}
-import nl.knaw.dans.narcis.graphql.app.graphql.types.{GraphQLExternalPersonId, GraphQLPerson, GraphQLWork, Query}
+import nl.knaw.dans.narcis.graphql.app.graphql.types.{GraphQLExternalPersonId, GraphQLExternalWorkId, GraphQLPerson, GraphQLWork, Query}
 import nl.knaw.dans.narcis.graphql.app.model.PersonIdType.PersonIdType
-import nl.knaw.dans.narcis.graphql.app.model.{PersonIdType}
+import nl.knaw.dans.narcis.graphql.app.model.{PersonIdType, WorkIdType, WorkType}
 import org.joda.time.LocalDate
 import sangria.ast.StringValue
 import sangria.execution.deferred.DeferredResolver
@@ -83,6 +83,21 @@ object GraphQLSchema {
     DocumentValue("orcid", "Open Researcher and Contributor ID (ORCID)"),
     // TODO all the others...
   )
+
+  implicit val WorkTypeType = deriveEnumType[WorkType.Value](
+    EnumTypeDescription("The type of work"),
+    DocumentValue("publication", "A published work"),
+    DocumentValue("dataset", "A dataset"),
+    // TODO all the others...
+  )
+
+
+  implicit val WorkIdTypeType = deriveEnumType[WorkIdType.Value](
+    EnumTypeDescription("The type of work identifier"),
+    // TODO more documentation
+  )
+
+  implicit val GraphQLExternalWorkIdType: ObjectType[DataContext, GraphQLExternalWorkId] = deriveObjectType[DataContext, GraphQLExternalWorkId]()
 
   implicit val GraphQLExternalPersonIdType: ObjectType[DataContext, GraphQLExternalPersonId] = deriveObjectType[DataContext, GraphQLExternalPersonId]()
 

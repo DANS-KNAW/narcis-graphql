@@ -17,7 +17,7 @@ package nl.knaw.dans.narcis.graphql.app.repository.demo_impl
 
 import java.util.UUID
 
-import nl.knaw.dans.narcis.graphql.app.model.{ PersonId, Work, WorkId }
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalWorkId, PersonId, Work, WorkId}
 import nl.knaw.dans.narcis.graphql.app.repository.WorkDao
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
@@ -66,4 +66,6 @@ class DemoWorkDao(initialWorks: Map[WorkId, Work] = Map.empty,
     trace(ids)
     ids.flatMap(workId => getPersonsByWork(workId).map(workId -> _))
   }
+
+  override def getExtIds(id: WorkId): Seq[ExternalWorkId] = ???
 }
