@@ -28,6 +28,7 @@ import sangria.schema.{Context, DeferredValue}
 class GraphQLWork(private val work: Work) {
 
   @GraphQLField
+  @GraphQLName("id")
   @GraphQLDescription("The identifier with which this work is associated.")
   val id: WorkId = work.id
 

@@ -19,10 +19,15 @@ import nl.knaw.dans.narcis.graphql.app.model.{ExternalWorkId, PersonId, Work, Wo
 import nl.knaw.dans.narcis.graphql.app.repository.WorkDao
 import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.PidGraphWorkDao
 
+// note that we only use the pidgraph, but could also try to get 'work' info from SRU!
 class NarcisWorkDao(pidgraph: PidGraphWorkDao) extends WorkDao {
-  override def getById(id: WorkId): Option[Work] = ???
+  override def getById(id: WorkId): Option[Work] = {
+    pidgraph.getById(id)
+  }
 
-  override def getById(ids: Seq[WorkId]): Seq[Work] = ???
+  override def getById(ids: Seq[WorkId]): Seq[Work] = {
+    pidgraph.getById(ids)
+  }
 
   override def getByPersonId(id: PersonId): Option[Seq[Work]] = {
     pidgraph.getByPersonId(id)
@@ -32,7 +37,9 @@ class NarcisWorkDao(pidgraph: PidGraphWorkDao) extends WorkDao {
     pidgraph.getByPersonId(ids)
   }
 
-  override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = ???
+  override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = {
+    pidgraph.getPersonsByWork(id)
+  }
 
   override def getPersonsByWork(ids: Seq[WorkId]): Seq[(WorkId, Seq[PersonId])] = ???
 

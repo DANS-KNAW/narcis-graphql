@@ -21,7 +21,7 @@ import java.util.UUID
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.Command.configuration
 import nl.knaw.dans.narcis.graphql.app.model.WorkType.WorkType
-import nl.knaw.dans.narcis.graphql.app.rest.{GraphWork, GraphWorkPid, HttpWorker, PidGraphData, WorkPidType, WorkType => GraphWorkType}
+import nl.knaw.dans.narcis.graphql.app.rest.{GraphPerson, GraphWork, GraphWorkPid, HttpWorker, PidGraphData, WorkPidType, WorkType => GraphWorkType}
 import nl.knaw.dans.narcis.graphql.app.model.{ExternalWorkId, PersonId, Work, WorkId, WorkIdType, WorkType}
 import nl.knaw.dans.narcis.graphql.app.repository.WorkDao
 import org.apache.commons.lang.NotImplementedException
@@ -33,9 +33,37 @@ import scala.util.{Failure, Success, Try}
 class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
   implicit val formats: Formats = PidGraphData.jsonFormats
 
-  override def getById(id: WorkId): Option[Work] = ???
+  override def getById(id: WorkId): Option[Work] = {
+    trace(id)
 
-  override def getById(ids: Seq[WorkId]): Seq[Work] = ???
+    // date from pidgraph is formatted yyyyMMdd
+    val pgDateFormat = new SimpleDateFormat("yyyyMMdd")
+
+    // get data from the pidgraph rest api
+    val url = s"${configuration.pidGraphUrl}/work/$id"
+    val dataFetcher = new HttpWorker(configuration.version)
+    val pidGraphWork = dataFetcher.getJsonData[GraphWork](url)
+
+    pidGraphWork match {
+      case Success(pgWork) => {
+
+        Some( Work(pgWork.id,
+          pgWork.title,
+          new LocalDate(pgDateFormat.parse(pgWork.date)),
+          WorkTypeFromPidGraphWorkType(pgWork.entitytype))
+        )
+      }
+      case Failure(exception) => {
+        logger.warn(s"Failed getting works for person $id from $url, error: ${exception.getMessage}")
+        None
+      }
+    }
+  }
+
+  override def getById(ids: Seq[WorkId]): Seq[Work] = {
+    ids.map(id => (id, getById(id)))
+      .collect { case (id, Some(work)) =>  work } // no id !
+  }
 
   override def getByPersonId(id: PersonId): Option[Seq[Work]] = {
     trace(id)
@@ -73,7 +101,28 @@ class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
       .collect { case (id, Some(works)) => (id, works) }
   }
 
-  override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = ???
+  override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = {
+    trace(id)
+
+    // just return some fake, for testing
+    //List(ExternalWorkId(WorkIdType.wosuid, "fake-work-id-value"))
+
+    // this is what we can get additional information on here
+    // get data from the pidgraph rest api
+    val dataFetcher = new HttpWorker(configuration.version)
+    val pidGraphPersons = dataFetcher.getJsonData[Seq[GraphPerson]](s"${configuration.pidGraphUrl}/work/$id/person")
+    // extract ext ids
+    pidGraphPersons match {
+      case Success(pgd) => {
+        // Note that we throw away all person data and only get the id
+        Some(pgd.map(pgPerson => pgPerson.id))
+      }
+      case Failure(exception) => {
+        logger.warn(s"Failed getting external identifiers for work $id, error: ${exception.getMessage}")
+        None
+      }
+    }
+  }
 
   override def getPersonsByWork(ids: Seq[WorkId]): Seq[(WorkId, Seq[PersonId])] = ???
 
