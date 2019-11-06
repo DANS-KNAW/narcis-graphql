@@ -18,8 +18,7 @@ package nl.knaw.dans.narcis.graphql.app.graphql.types
 import nl.knaw.dans.narcis.graphql.app.graphql.DataContext
 import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.WorkResolver
 import nl.knaw.dans.narcis.graphql.app.model.PersonIdType.PersonIdType
-import nl.knaw.dans.narcis.graphql.app.model.{Person, PersonId, PersonIdType}
-import org.joda.time.LocalDate
+import nl.knaw.dans.narcis.graphql.app.model.{Person, PersonId}
 import sangria.macros.derive.{GraphQLDescription, GraphQLField, GraphQLName}
 import sangria.schema.{Context, DeferredValue}
 
@@ -59,7 +58,6 @@ class GraphQLPerson(private val person: Person) {
   @GraphQLField
   @GraphQLDescription("The person's titles.")
   val titles: Option[String] = person.titles
-
 
   @GraphQLField
   @GraphQLDescription("The external identifiers of this person")

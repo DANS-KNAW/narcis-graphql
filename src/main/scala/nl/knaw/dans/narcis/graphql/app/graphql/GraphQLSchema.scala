@@ -19,14 +19,12 @@ import java.util.UUID
 
 import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{PersonResolver, WorkResolver}
 import nl.knaw.dans.narcis.graphql.app.graphql.types.{GraphQLExternalPersonId, GraphQLExternalWorkId, GraphQLPerson, GraphQLWork, Query}
-import nl.knaw.dans.narcis.graphql.app.model.PersonIdType.PersonIdType
 import nl.knaw.dans.narcis.graphql.app.model.{PersonIdType, WorkIdType, WorkType}
 import org.joda.time.LocalDate
 import sangria.ast.StringValue
 import sangria.execution.deferred.DeferredResolver
-import sangria.macros.derive.{DocumentInputField, _}
-import sangria.marshalling.FromInput
-import sangria.schema.{InputObjectType, ObjectType, ScalarType, Schema}
+import sangria.macros.derive._
+import sangria.schema.{ObjectType, ScalarType, Schema}
 import sangria.validation.{StringCoercionViolation, ValueCoercionViolation, Violation}
 
 import scala.util.Try
@@ -79,22 +77,35 @@ object GraphQLSchema {
 
   implicit val PersonIdTypeType = deriveEnumType[PersonIdType.Value](
     EnumTypeDescription("The type of person (author) identifier"),
-    DocumentValue("dai_nl", "Digital Author Identifier (DAI), but specific for The Netherlands"),
+    DocumentValue("nod_person", "NARCIS internal Identifier"),
+    DocumentValue("dai_nl", "Digital Author Identifier (DAI), specific for The Netherlands"),
     DocumentValue("orcid", "Open Researcher and Contributor ID (ORCID)"),
-    // TODO all the others...
+    DocumentValue("isni", "International Standard Name Identifier (ISNI)"),
+    DocumentValue("researcherid", "ResearcherID"),
+    DocumentValue("scopus", "Scopus Author ID"),
+    DocumentValue("viaf", "Virtual International Authority File (VIAF)"),
+    DocumentValue("ror", "Research Organization Registry (ROR)"),
+    //DocumentValue("loop", ""),
+    //DocumentValue("publication", ""),
   )
 
   implicit val WorkTypeType = deriveEnumType[WorkType.Value](
     EnumTypeDescription("The type of work"),
-    DocumentValue("publication", "A published work"),
-    DocumentValue("dataset", "A dataset"),
-    // TODO all the others...
+    // no value description here, names are self explanatory
   )
-
 
   implicit val WorkIdTypeType = deriveEnumType[WorkIdType.Value](
     EnumTypeDescription("The type of work identifier"),
-    // TODO more documentation
+    DocumentValue("arxiv", "arXiv"),
+    DocumentValue("doi", "Digital Object Identifier (DOI)"),
+    DocumentValue("eid", "Scopus EID"),
+    DocumentValue("handle", "Handle"),
+    DocumentValue("pmc", "PubMed Central ID"),
+    DocumentValue("pmid", "PubMed ID"),
+    DocumentValue("purl", "Persistent uniform resource locator (PURL)"),
+    DocumentValue("urn_nbn", "Uniform Resource Names - National Bibliographic Number (URN-NBN)"),
+    DocumentValue("wosuid", "Web of Science UID"),
+    //DocumentValue("narcis_oaipub", ""),
   )
 
   implicit val GraphQLExternalWorkIdType: ObjectType[DataContext, GraphQLExternalWorkId] = deriveObjectType[DataContext, GraphQLExternalWorkId]()

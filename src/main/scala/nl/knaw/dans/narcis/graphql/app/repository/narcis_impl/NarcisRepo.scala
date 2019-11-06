@@ -19,7 +19,6 @@ import java.sql.Connection
 
 import nl.knaw.dans.narcis.graphql.app.database.VsoiDb
 import nl.knaw.dans.narcis.graphql.app.repository.Repository
-import nl.knaw.dans.narcis.graphql.app.repository.demo_impl.{DemoPersonDao, DemoWorkDao}
 import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.{PidGraphWorkDao, PidGraphPersonDao}
 import nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl.VsoiPersonDao
 

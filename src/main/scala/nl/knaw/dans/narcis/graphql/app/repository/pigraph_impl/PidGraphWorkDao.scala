@@ -16,7 +16,6 @@
 package nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl
 
 import java.text.SimpleDateFormat
-import java.util.UUID
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.Command.configuration
@@ -92,8 +91,6 @@ class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
       }
     }
 
-    // just return some fake work, for testing
-    //Some(List(Work("fakeid", "Title-test-1")))
   }
 
   override def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])] = {
@@ -104,10 +101,6 @@ class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
   override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = {
     trace(id)
 
-    // just return some fake, for testing
-    //List(ExternalWorkId(WorkIdType.wosuid, "fake-work-id-value"))
-
-    // this is what we can get additional information on here
     // get data from the pidgraph rest api
     val dataFetcher = new HttpWorker(configuration.version)
     val pidGraphPersons = dataFetcher.getJsonData[Seq[GraphPerson]](s"${configuration.pidGraphUrl}/work/$id/person")
@@ -182,10 +175,6 @@ class PidGraphWorkDao extends WorkDao with DebugEnhancedLogging {
   override def getExtIds(id: WorkId): Seq[ExternalWorkId] = {
     trace(id)
 
-    // just return some fake, for testing
-    //List(ExternalWorkId(WorkIdType.wosuid, "fake-work-id-value"))
-
-    // this is what we can get additional information on here
     // get data from the pidgraph rest api
     val dataFetcher = new HttpWorker(configuration.version)
     val pidGraphWork = dataFetcher.getJsonData[GraphWork](s"${configuration.pidGraphUrl}/work/$id")

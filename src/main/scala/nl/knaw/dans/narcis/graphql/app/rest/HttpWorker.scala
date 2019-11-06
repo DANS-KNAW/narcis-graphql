@@ -23,6 +23,7 @@ import scalaj.http.BaseHttp
 
 import scala.util.Try
 
+// Note that this code is copied from the narcis-pid-aggregator, but maybe should be in a library,
 class HttpWorker(appVersion: String) extends DebugEnhancedLogging {
   object Http extends BaseHttp(userAgent = s"narcis-graphql/$appVersion")
 

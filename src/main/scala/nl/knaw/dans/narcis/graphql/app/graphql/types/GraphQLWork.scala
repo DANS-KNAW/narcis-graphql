@@ -51,6 +51,7 @@ class GraphQLWork(private val work: Work) {
     // without a resolver
     ctx.ctx.repo.workDao.getExtIds(work.id).map(new GraphQLExternalWorkId(_))
   }
+
   // NOTE: toggle between these 2 implementations and see the difference
   //  in the number of interactions with the DAO
 //  @GraphQLField

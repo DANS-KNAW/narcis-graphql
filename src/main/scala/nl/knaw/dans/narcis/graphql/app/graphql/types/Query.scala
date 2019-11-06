@@ -41,16 +41,15 @@ class Query {
 //  }
 
   @GraphQLField
-  @GraphQLDescription("Find the person identified with the given identifier.")
+  @GraphQLDescription("Find the person identified with the given (internal) identifier.")
   def person(@GraphQLDescription("The identifier of the person to be found.") id: PersonId)
             (implicit ctx: Context[DataContext, Unit]): DeferredValue[DataContext, Option[GraphQLPerson]] = {
     PersonResolver.personById(id)
       .map(_.map(new GraphQLPerson(_)))
   }
 
-
   @GraphQLField
-  @GraphQLDescription("Find the work identified with the given identifier.")
+  @GraphQLDescription("Find the work identified with the given (internal) identifier.")
   def work(@GraphQLDescription("The identifier of the work to be found.") id: WorkId)
             (implicit ctx: Context[DataContext, Unit]): DeferredValue[DataContext, Option[GraphQLWork]] = {
     WorkResolver.workById(id)

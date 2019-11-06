@@ -17,7 +17,6 @@ package nl.knaw.dans.narcis.graphql.app.repository.narcis_impl
 
 import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, Person, PersonId}
 import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
-import nl.knaw.dans.narcis.graphql.app.repository.demo_impl.DemoPersonDao
 import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.PidGraphPersonDao
 import nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl.VsoiPersonDao
 
