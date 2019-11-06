@@ -17,7 +17,7 @@ package nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.Command.configuration
-import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, InputPerson, Person, PersonId, PersonIdType}
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, Person, PersonId, PersonIdType}
 import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
 import nl.knaw.dans.narcis.graphql.app.rest.{GraphPerson, GraphPersonPid, HttpWorker, PersonPidType, PidGraphData}
 import org.apache.commons.lang.NotImplementedException
@@ -25,7 +25,7 @@ import org.json4s.Formats
 
 import scala.util.{Failure, Success, Try}
 
-class PidGraphpersonDao extends PersonDao with DebugEnhancedLogging {
+class PidGraphPersonDao extends PersonDao with DebugEnhancedLogging {
   implicit val formats: Formats = PidGraphData.jsonFormats
 
   override def getAll: Seq[Person] = ???
@@ -76,6 +76,4 @@ class PidGraphpersonDao extends PersonDao with DebugEnhancedLogging {
 
     new ExternalPersonId(idType, pgPid.value) // assume pidgraph value is normalized
   }
-
-  override def store(person: InputPerson): Person = ???
 }

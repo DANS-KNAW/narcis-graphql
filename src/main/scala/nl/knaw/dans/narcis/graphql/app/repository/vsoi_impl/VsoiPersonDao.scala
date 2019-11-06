@@ -19,7 +19,7 @@ import java.sql.Connection
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.app.database.VsoiDb
-import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, InputPerson, Person, PersonId}
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, Person, PersonId}
 import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
 
 import scala.util.{Failure, Success}
@@ -55,8 +55,6 @@ class VsoiPersonDao(vsoiDb: VsoiDb)(implicit sysVSOIConnection: Connection)  ext
     // nothing yet!
     //Seq.empty[Person]
   }
-
-  override def store(person: InputPerson): Person = ???
 
   override def getExtIds(id: PersonId): Seq[ExternalPersonId] = {
     vsoiDb.getExternalIdentifiers(id) match {

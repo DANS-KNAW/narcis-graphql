@@ -18,15 +18,13 @@ package nl.knaw.dans.narcis.graphql.app.graphql
 import java.util.UUID
 
 import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{PersonResolver, WorkResolver}
-import nl.knaw.dans.narcis.graphql.app.graphql.types.{GraphQLExternalPersonId, GraphQLPerson, GraphQLWork, Mutation, Query}
-import nl.knaw.dans.narcis.graphql.app.model.PersonIdType.PersonIdType
-import nl.knaw.dans.narcis.graphql.app.model.{InputPerson, InputWork, PersonIdType}
+import nl.knaw.dans.narcis.graphql.app.graphql.types.{GraphQLExternalPersonId, GraphQLExternalWorkId, GraphQLPerson, GraphQLWork, Query}
+import nl.knaw.dans.narcis.graphql.app.model.{PersonIdType, WorkIdType, WorkType}
 import org.joda.time.LocalDate
 import sangria.ast.StringValue
 import sangria.execution.deferred.DeferredResolver
-import sangria.macros.derive.{DocumentInputField, _}
-import sangria.marshalling.FromInput
-import sangria.schema.{InputObjectType, ObjectType, ScalarType, Schema}
+import sangria.macros.derive._
+import sangria.schema.{ObjectType, ScalarType, Schema}
 import sangria.validation.{StringCoercionViolation, ValueCoercionViolation, Violation}
 
 import scala.util.Try
@@ -79,41 +77,48 @@ object GraphQLSchema {
 
   implicit val PersonIdTypeType = deriveEnumType[PersonIdType.Value](
     EnumTypeDescription("The type of person (author) identifier"),
-    DocumentValue("dai_nl", "Digital Author Identifier (DAI), but specific for The Netherlands"),
+    DocumentValue("nod_person", "NARCIS internal Identifier"),
+    DocumentValue("dai_nl", "Digital Author Identifier (DAI), specific for The Netherlands"),
     DocumentValue("orcid", "Open Researcher and Contributor ID (ORCID)"),
-    // TODO all the others...
+    DocumentValue("isni", "International Standard Name Identifier (ISNI)"),
+    DocumentValue("researcherid", "ResearcherID"),
+    DocumentValue("scopus", "Scopus Author ID"),
+    DocumentValue("viaf", "Virtual International Authority File (VIAF)"),
+    DocumentValue("ror", "Research Organization Registry (ROR)"),
+    //DocumentValue("loop", ""),
+    //DocumentValue("publication", ""),
   )
+
+  implicit val WorkTypeType = deriveEnumType[WorkType.Value](
+    EnumTypeDescription("The type of work"),
+    // no value description here, names are self explanatory
+  )
+
+  implicit val WorkIdTypeType = deriveEnumType[WorkIdType.Value](
+    EnumTypeDescription("The type of work identifier"),
+    DocumentValue("arxiv", "arXiv"),
+    DocumentValue("doi", "Digital Object Identifier (DOI)"),
+    DocumentValue("eid", "Scopus EID"),
+    DocumentValue("handle", "Handle"),
+    DocumentValue("pmc", "PubMed Central ID"),
+    DocumentValue("pmid", "PubMed ID"),
+    DocumentValue("purl", "Persistent uniform resource locator (PURL)"),
+    DocumentValue("urn_nbn", "Uniform Resource Names - National Bibliographic Number (URN-NBN)"),
+    DocumentValue("wosuid", "Web of Science UID"),
+    //DocumentValue("narcis_oaipub", ""),
+  )
+
+  implicit val GraphQLExternalWorkIdType: ObjectType[DataContext, GraphQLExternalWorkId] = deriveObjectType[DataContext, GraphQLExternalWorkId]()
 
   implicit val GraphQLExternalPersonIdType: ObjectType[DataContext, GraphQLExternalPersonId] = deriveObjectType[DataContext, GraphQLExternalPersonId]()
 
   implicit val GraphQLPersonType: ObjectType[DataContext, GraphQLPerson] = deriveObjectType[DataContext, GraphQLPerson]()
-  implicit val InputPersonType: InputObjectType[InputPerson] = deriveInputObjectType[InputPerson](
-    InputObjectTypeDescription("The person to be inserted."),
-    DocumentInputField("name", "The person's name."),
-    DocumentInputField("email", "The person's email."),
-    DocumentInputField("birthday", "The date the person was born."),
-    DocumentInputField("place", "The city/town where this person lives."),
-  )
-  implicit val InputPersonFromInput: FromInput[InputPerson] = fromInput(ad => InputPerson(
-    name = ad("name").asInstanceOf[String],
-    email = ad("email").asInstanceOf[Option[String]],
-    birthday = ad("birthday").asInstanceOf[LocalDate],
-    place = ad("place").asInstanceOf[String],
-  ))
 
   implicit val GraphQLWorkType: ObjectType[DataContext, GraphQLWork] = deriveObjectType[DataContext, GraphQLWork]()
-  implicit val InputWorkType: InputObjectType[InputWork] = deriveInputObjectType[InputWork](
-    InputObjectTypeDescription("The work to be inserted."),
-    DocumentInputField("title", "The work's title."),
-  )
-  implicit val InputWorkFromInput: FromInput[InputWork] = fromInput(ad => InputWork(
-    title = ad("title").asInstanceOf[String],
-  ))
 
   implicit val QueryType: ObjectType[DataContext, Unit] = deriveContextObjectType[DataContext, Query, Unit](_.query)
-  implicit val MutationType: ObjectType[DataContext, Unit] = deriveContextObjectType[DataContext, Mutation, Unit](_.mutation)
 
-  val schema: Schema[DataContext, Unit] = Schema[DataContext, Unit](QueryType, mutation = Option(MutationType))
+  val schema: Schema[DataContext, Unit] = Schema[DataContext, Unit](QueryType)
   val deferredResolver: DeferredResolver[DataContext] = DeferredResolver.fetchers(
     PersonResolver.byIdFetcher,
     WorkResolver.byIdFetcher,

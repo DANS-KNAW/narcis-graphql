@@ -13,24 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl
+package nl.knaw.dans.narcis.graphql.app.repository.narcis_impl
 
-import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.app.model.{ExternalWorkId, PersonId, Work, WorkId}
 import nl.knaw.dans.narcis.graphql.app.repository.WorkDao
+import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.PidGraphWorkDao
 
-class VsoiWorkDao extends WorkDao with DebugEnhancedLogging {
-  override def getById(id: WorkId): Option[Work] = ???
+// note that we only use the pidgraph, but could also try to get 'work' info from SRU!
+class NarcisWorkDao(pidgraph: PidGraphWorkDao) extends WorkDao {
+  override def getById(id: WorkId): Option[Work] = {
+    pidgraph.getById(id)
+  }
 
-  override def getById(ids: Seq[WorkId]): Seq[Work] = ???
+  override def getById(ids: Seq[WorkId]): Seq[Work] = {
+    pidgraph.getById(ids)
+  }
 
-  override def getByPersonId(id: PersonId): Option[Seq[Work]] = ???
+  override def getByPersonId(id: PersonId): Option[Seq[Work]] = {
+    pidgraph.getByPersonId(id)
+  }
 
-  override def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])] = ???
+  override def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])] = {
+    pidgraph.getByPersonId(ids)
+  }
 
-  override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = ???
+  override def getPersonsByWork(id: WorkId): Option[Seq[PersonId]] = {
+    pidgraph.getPersonsByWork(id)
+  }
 
   override def getPersonsByWork(ids: Seq[WorkId]): Seq[(WorkId, Seq[PersonId])] = ???
 
-  override def getExtIds(id: WorkId): Seq[ExternalWorkId] = ???
+  override def getExtIds(id: WorkId): Seq[ExternalWorkId] =
+    pidgraph.getExtIds(id)
 }

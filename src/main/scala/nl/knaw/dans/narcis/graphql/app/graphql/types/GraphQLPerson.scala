@@ -18,8 +18,7 @@ package nl.knaw.dans.narcis.graphql.app.graphql.types
 import nl.knaw.dans.narcis.graphql.app.graphql.DataContext
 import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.WorkResolver
 import nl.knaw.dans.narcis.graphql.app.model.PersonIdType.PersonIdType
-import nl.knaw.dans.narcis.graphql.app.model.{Person, PersonId, PersonIdType}
-import org.joda.time.LocalDate
+import nl.knaw.dans.narcis.graphql.app.model.{Person, PersonId}
 import sangria.macros.derive.{GraphQLDescription, GraphQLField, GraphQLName}
 import sangria.schema.{Context, DeferredValue}
 
@@ -41,12 +40,24 @@ class GraphQLPerson(private val person: Person) {
   val email: Option[String] = person.email
 
   @GraphQLField
-  @GraphQLDescription("The date the person was born.")
-  val birthday: LocalDate = person.birthday
+  @GraphQLDescription("The person's URL.")
+  val url: Option[String] = person.url
 
   @GraphQLField
-  @GraphQLDescription("The city/town where this person lives.")
-  val place: String = person.place
+  @GraphQLDescription("The person's givenname.")
+  val givenname: Option[String] = person.givenname
+
+  @GraphQLField
+  @GraphQLDescription("The person's initials.")
+  val initials: Option[String] = person.initials
+
+  @GraphQLField
+  @GraphQLDescription("The person's name prefix.")
+  val prefix: Option[String] = person.prefix
+
+  @GraphQLField
+  @GraphQLDescription("The person's titles.")
+  val titles: Option[String] = person.titles
 
   @GraphQLField
   @GraphQLDescription("The external identifiers of this person")

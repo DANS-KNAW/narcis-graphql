@@ -17,21 +17,40 @@ package nl.knaw.dans.narcis.graphql.app.graphql.types
 
 import nl.knaw.dans.narcis.graphql.app.graphql.DataContext
 import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.PersonResolver
-import nl.knaw.dans.narcis.graphql.app.model.{ Work, WorkId }
-import sangria.macros.derive.{ GraphQLDescription, GraphQLField, GraphQLName }
-import sangria.schema.{ Context, DeferredValue }
+import nl.knaw.dans.narcis.graphql.app.model.WorkType.WorkType
+import nl.knaw.dans.narcis.graphql.app.model.{Work, WorkId}
+import org.joda.time.LocalDate
+import sangria.macros.derive.{GraphQLDescription, GraphQLField, GraphQLName}
+import sangria.schema.{Context, DeferredValue}
 
 @GraphQLName("Work")
 @GraphQLDescription("The object containing data about the work.")
 class GraphQLWork(private val work: Work) {
 
   @GraphQLField
+  @GraphQLName("id")
   @GraphQLDescription("The identifier with which this work is associated.")
   val id: WorkId = work.id
 
   @GraphQLField
   @GraphQLDescription("The work's title.")
   val title: String = work.title
+
+  @GraphQLField
+  @GraphQLDescription("The date this work was published or issued.")
+  val date: LocalDate = work.date
+
+  @GraphQLField
+  @GraphQLName("type")
+  @GraphQLDescription("The type of work.")
+  val workType: WorkType = work.workType
+
+  @GraphQLField
+  @GraphQLDescription("The external identifiers of this person")
+  def externalIds(implicit ctx: Context[DataContext, GraphQLWork]): Seq[GraphQLExternalWorkId] = {
+    // without a resolver
+    ctx.ctx.repo.workDao.getExtIds(work.id).map(new GraphQLExternalWorkId(_))
+  }
 
   // NOTE: toggle between these 2 implementations and see the difference
   //  in the number of interactions with the DAO

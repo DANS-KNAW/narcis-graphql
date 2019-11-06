@@ -15,14 +15,13 @@
  */
 package nl.knaw.dans.narcis.graphql.app.repository.narcis_impl
 
-import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, InputPerson, Person, PersonId}
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, Person, PersonId}
 import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
-import nl.knaw.dans.narcis.graphql.app.repository.demo_impl.DemoPersonDao
-import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.PidGraphpersonDao
+import nl.knaw.dans.narcis.graphql.app.repository.pigraph_impl.PidGraphPersonDao
 import nl.knaw.dans.narcis.graphql.app.repository.vsoi_impl.VsoiPersonDao
 
 class NarcisPersonDao(vsoi: VsoiPersonDao,
-                      pidgraph: PidGraphpersonDao
+                      pidgraph: PidGraphPersonDao
                      ) extends PersonDao {
 
   // merge information, but start with VSOI and add only complementary non conflicting info from other sources.
@@ -40,6 +39,4 @@ class NarcisPersonDao(vsoi: VsoiPersonDao,
     // merge them, plus deduplicate... only works if normalised in the same way
     (extIdsFromVsoi.toSet ++ extIdsFromPidgraph.toSet).toSeq
   }
-
-  override def store(person: InputPerson): Person = ???
 }

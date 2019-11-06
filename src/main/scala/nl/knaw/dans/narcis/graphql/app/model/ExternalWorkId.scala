@@ -15,16 +15,23 @@
  */
 package nl.knaw.dans.narcis.graphql.app.model
 
-import org.joda.time.LocalDate
+import nl.knaw.dans.narcis.graphql.app.model.WorkIdType.WorkIdType
 
-import scala.collection.mutable.ArrayBuffer
+object WorkIdType extends Enumeration {
+  type WorkIdType = Value
 
-case class Person(personId: PersonId, // for Narcis this is the PRS
-                  name: String, // the surname (last name)
-                  email: Option[String]=None,
-                  url: Option[String]=None,
-                  givenname: Option[String]=None, // first name
-                  initials: Option[String]=None,
-                  prefix: Option[String]=None,
-                  titles: Option[String]=None,
-                 )
+  // @formatter:off
+  val arxiv          = Value("arxiv")
+  val doi            = Value("doi")
+  val eid            = Value("eid")
+  val handle         = Value("handle")
+  val narcis_oaipub  = Value("narcis-oaipub")
+  val pmc            = Value("pmc")
+  val pmid           = Value("pmid")
+  val purl           = Value("purl")
+  val urn_nbn        = Value("urn:nbn")
+  val wosuid         = Value("wosuid")
+  // @formatter:on
+}
+
+case class ExternalWorkId(idType: WorkIdType, idValue: String)

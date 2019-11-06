@@ -20,5 +20,5 @@ import java.util.UUID
 package object model {
 
   type PersonId = String //UUID
-  type WorkId = UUID
+  type WorkId = String //UUID
 }

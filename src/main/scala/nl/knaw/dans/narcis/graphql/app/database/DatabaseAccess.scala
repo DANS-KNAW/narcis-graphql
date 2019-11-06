@@ -27,7 +27,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.control.NonFatal
 import scala.util.{ Failure, Try }
 
-// TODO copied from easy-bag-index
+// Note that this implementation was copied from easy-bag-index, it might be good to have this in a library
 class DatabaseAccess(dbConfig: DatabaseConfiguration) extends DebugEnhancedLogging {
 
   type ConnectionPool = DataSource with AutoCloseable

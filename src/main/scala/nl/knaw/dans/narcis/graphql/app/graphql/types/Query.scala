@@ -16,10 +16,10 @@
 package nl.knaw.dans.narcis.graphql.app.graphql.types
 
 import nl.knaw.dans.narcis.graphql.app.graphql.DataContext
-import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.PersonResolver
-import nl.knaw.dans.narcis.graphql.app.model.PersonId
-import sangria.macros.derive.{ GraphQLDescription, GraphQLField }
-import sangria.schema.{ Context, DeferredValue }
+import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{PersonResolver, WorkResolver}
+import nl.knaw.dans.narcis.graphql.app.model.{PersonId, WorkId}
+import sangria.macros.derive.{GraphQLDescription, GraphQLField}
+import sangria.schema.{Context, DeferredValue}
 
 class Query {
 
@@ -41,10 +41,18 @@ class Query {
 //  }
 
   @GraphQLField
-  @GraphQLDescription("Find the person identified with the given identifier.")
+  @GraphQLDescription("Find the person identified with the given (internal) identifier.")
   def person(@GraphQLDescription("The identifier of the person to be found.") id: PersonId)
             (implicit ctx: Context[DataContext, Unit]): DeferredValue[DataContext, Option[GraphQLPerson]] = {
     PersonResolver.personById(id)
       .map(_.map(new GraphQLPerson(_)))
+  }
+
+  @GraphQLField
+  @GraphQLDescription("Find the work identified with the given (internal) identifier.")
+  def work(@GraphQLDescription("The identifier of the work to be found.") id: WorkId)
+            (implicit ctx: Context[DataContext, Unit]): DeferredValue[DataContext, Option[GraphQLWork]] = {
+    WorkResolver.workById(id)
+      .map(_.map(new GraphQLWork(_)))
   }
 }

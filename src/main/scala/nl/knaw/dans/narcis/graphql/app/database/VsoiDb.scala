@@ -20,19 +20,17 @@ import java.sql.{Connection, ResultSet}
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.narcis.graphql.app.model.{ExternalPersonId, Person, PersonIdType}
-import org.joda.time.LocalDate
 import resource.{ManagedResource, managed}
 
 import scala.util.{Success, Try}
 
 class VsoiDb() extends DebugEnhancedLogging {
 
-  // Note that this is without the external identifiers
+  // Note that this is person information without the external identifiers or works
   def getPerson(prsId: String)(implicit connection: Connection): Try[Option[Person]] = {
     trace(prsId)
 
-    // TODO get all info
-    val query = "SELECT achternaam, email FROM persoon WHERE pers_id=?;"
+    val query = "SELECT achternaam, email, url, voornaam, initialen, voorvoegsel, titulatuur FROM persoon WHERE pers_id=?;"
     val managedResultSet: ManagedResource[ResultSet] = for {
           prepStatement <- managed(connection.prepareStatement(query))
           _ = prepStatement.setString(1, prsId)
@@ -45,16 +43,18 @@ class VsoiDb() extends DebugEnhancedLogging {
         val name = resultSet.getString("achternaam")
         val email = Option(resultSet.getString("email"))
         logger.info(s"Person info from database = name: $name, email: $email")
-        Option(Person(prsId, name, email, new LocalDate(1990, 1, 1), "London"))
+        val url = Option(resultSet.getString("url"))
+        val givenname = Option(resultSet.getString("voornaam"))
+        val initials = Option(resultSet.getString("initialen"))
+        val prefix = Option(resultSet.getString("voorvoegsel"))
+        val titles = Option(resultSet.getString("titulatuur"))
+
+        Option(Person(prsId, name, email, url, givenname, initials, prefix, titles))
       } else {
         Option.empty
       }
     }).tried
   }
-
-
-  // NOTE copied all from the aggregator scala code... only minor changes!
-
 
   def getExternalIdentifiers(prsId: String)
                             (implicit connection: Connection): Try[Seq[ExternalPersonId]] = {
@@ -107,10 +107,7 @@ class VsoiDb() extends DebugEnhancedLogging {
   }
 
   private def getNormalisedPersId(pid: ExternalPersonId): Try[ExternalPersonId] = {
-    Success(pid) // no normalisation!!!
-
-//    pidNormaliser.normalisePersonPid(pid.idType, pid.idValue)
-//      .map(ExternalPersonId(pid.idType, _))
+    Success(pid) // no normalisation, assume vsoi is normalised, code can be found in narcis-pid-aggregator project
   }
 
 }

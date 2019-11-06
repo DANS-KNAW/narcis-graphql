@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.narcis.graphql.app.repository
 
-import nl.knaw.dans.narcis.graphql.app.model.{ InputWork, PersonId, Work, WorkId }
+import nl.knaw.dans.narcis.graphql.app.model.{ExternalWorkId, PersonId, Work, WorkId}
 
 trait WorkDao {
 
@@ -27,9 +27,9 @@ trait WorkDao {
 
   def getByPersonId(ids: Seq[PersonId]): Seq[(PersonId, Seq[Work])]
 
-  def store(personIds: Seq[PersonId], work: InputWork): Work
-
   def getPersonsByWork(id: WorkId): Option[Seq[PersonId]]
 
   def getPersonsByWork(ids: Seq[WorkId]): Seq[(WorkId, Seq[PersonId])]
+
+  def getExtIds(id: WorkId): Seq[ExternalWorkId]
 }
