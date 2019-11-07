@@ -25,7 +25,14 @@ import nl.knaw.dans.narcis.graphql.app.repository.PersonDao
 import scala.util.{Failure, Success}
 
 class VsoiPersonDao(vsoiDb: VsoiDb)(implicit sysVSOIConnection: Connection)  extends PersonDao with DebugEnhancedLogging {
-  override def getAll: Seq[Person] = ???
+
+  override def getAll: Seq[Person] = {
+    vsoiDb.getAllPersons.getOrElse({
+      logger.info(s"Failed getting info for persons")
+      Seq.empty[Person]
+    })
+
+  }
 
   override def find(id: PersonId): Option[Person] = {
     trace(id)

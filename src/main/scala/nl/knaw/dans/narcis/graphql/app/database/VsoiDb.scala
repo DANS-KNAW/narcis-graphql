@@ -56,6 +56,44 @@ class VsoiDb() extends DebugEnhancedLogging {
     }).tried
   }
 
+
+  def getAllPersons(implicit connection: Connection): Try[Seq[Person]] = {
+    trace("")
+
+    // TODO sort on pers_id; seems the most likely default, otherwise it would be achternaam
+    val query = "SELECT pers_id, achternaam, email, url, voornaam, initialen, voorvoegsel, titulatuur FROM persoon ORDER BY achternaam, pers_id ASC;"
+    val resultSet = for {
+      prepStatement <- managed(connection.prepareStatement(query))
+      resultSet <- managed(prepStatement.executeQuery())
+    } yield resultSet
+
+
+    resultSet.map(resultSet => {
+      /*
+       * Stream.continually(...).takeWhile(b => b) is equivalent to Java's while-loop: it checks
+       * whether there is a next result and continues doing this until resultSet.next() returns false.
+       */
+      Stream.continually(resultSet.next())
+        .take(1000) // just use hard limit for TESTING!
+        .takeWhile(b => b)
+        .map(_ => {
+          val prsId = resultSet.getString("pers_id")
+          val name = resultSet.getString("achternaam")
+          val email = Option(resultSet.getString("email"))
+          logger.info(s"Person info from database = name: $name, email: $email")
+          val url = Option(resultSet.getString("url"))
+          val givenname = Option(resultSet.getString("voornaam"))
+          val initials = Option(resultSet.getString("initialen"))
+          val prefix = Option(resultSet.getString("voorvoegsel"))
+          val titles = Option(resultSet.getString("titulatuur"))
+          Person(prsId, name, email, url, givenname, initials, prefix, titles)
+        }
+        )
+        .toList // We can't leave it as a Stream, but need to convert to a List, since the resources are closed on calling .tried
+    }
+    ).tried
+  }
+
   def getExternalIdentifiers(prsId: String)
                             (implicit connection: Connection): Try[Seq[ExternalPersonId]] = {
     trace(prsId)

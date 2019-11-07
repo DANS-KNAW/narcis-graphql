@@ -26,7 +26,10 @@ class NarcisPersonDao(vsoi: VsoiPersonDao,
 
   // merge information, but start with VSOI and add only complementary non conflicting info from other sources.
 
-  override def getAll: Seq[Person] = ???
+  override def getAll: Seq[Person] = {
+    // all NARCIS persons are in vsoi, nothing extra in the pidgraph
+    vsoi.getAll
+  }
 
   override def find(id: PersonId): Option[Person] = vsoi.find(id)
 
