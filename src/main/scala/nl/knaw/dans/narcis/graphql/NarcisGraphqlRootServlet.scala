@@ -16,8 +16,11 @@
 package nl.knaw.dans.narcis.graphql
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import nl.knaw.dans.lib.logging.servlet.{ LogResponseBodyOnError, PlainLogFormatter, ServletLogger }
+import nl.knaw.dans.lib.logging.servlet.{LogResponseBodyOnError, PlainLogFormatter, ServletLogger}
+import nl.knaw.dans.narcis.graphql.app.graphql.GraphQLSchema
 import org.scalatra._
+import sangria.ast.SchemaDefinition
+import sangria.renderer.SchemaRenderer
 
 class NarcisGraphqlRootServlet(version: String) extends ScalatraServlet
   with ServletLogger
@@ -26,7 +29,9 @@ class NarcisGraphqlRootServlet(version: String) extends ScalatraServlet
   with DebugEnhancedLogging {
 
   get("/") {
+    val renderedSchema =SchemaRenderer.renderSchema(GraphQLSchema.schema)
+
     contentType = "text/plain"
-    Ok(s"NARCIS Graphql Service running ($version)")
-  }
+    Ok(s"NARCIS Graphql Service running ($version) \n\n Schema:\n $renderedSchema")
+ }
 }

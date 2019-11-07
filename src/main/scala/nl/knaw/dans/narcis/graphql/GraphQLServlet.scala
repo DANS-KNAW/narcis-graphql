@@ -85,6 +85,9 @@ class GraphQLServlet(database: DatabaseAccess,
     },
   )
 
+  val rejectComplexQueries = QueryReducer.rejectComplexQueries[Any](1000, (c, ctx) ⇒
+    new IllegalArgumentException(s"Too complex query"))
+
   private def execute(variables: Option[JValue], operation: Option[String], middlewares: Middlewares)(queryAst: Document): Future[ActionResult] = {
     database.futureTransaction(connection => {
       Executor.execute(
@@ -96,6 +99,8 @@ class GraphQLServlet(database: DatabaseAccess,
         deferredResolver = GraphQLSchema.deferredResolver,
         exceptionHandler = defaultExceptionHandler,
         middleware = middlewares.values,
+        //maxQueryDepth = Some(7), // protect against malicious queries, but schema request hit this one!
+        queryReducers = rejectComplexQueries :: Nil, // protect against malicious queries
       )
         .map(Serialization.writePretty(_))
         .map(Ok(_))
