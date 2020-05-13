@@ -16,18 +16,28 @@
 package nl.knaw.dans.narcis.graphql.app.graphql.types
 
 import nl.knaw.dans.narcis.graphql.app.graphql.DataContext
-import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{PersonResolver, WorkResolver}
-import nl.knaw.dans.narcis.graphql.app.model.{PersonId, WorkId}
-import sangria.macros.derive.{GraphQLDescription, GraphQLField}
-import sangria.schema.{Context, DeferredValue}
+import nl.knaw.dans.narcis.graphql.app.graphql.relay.ExtendedConnection
+import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{ PersonResolver, WorkResolver }
+import nl.knaw.dans.narcis.graphql.app.model.{ PersonId, WorkId }
+import sangria.macros.derive.{ GraphQLDescription, GraphQLField }
+import sangria.relay.ConnectionArgs
+import sangria.schema.{ Context, DeferredValue }
 
 class Query {
 
   @GraphQLField
   @GraphQLDescription("List all known persons.")
-  def persons()(implicit ctx: Context[DataContext, Unit]): Seq[GraphQLPerson] = {
-    ctx.ctx.repo.personDao.getAll
-      .map(new GraphQLPerson(_))
+  def persons(before: Option[String] = None,
+              after: Option[String] = None,
+              first: Option[Int] = None,
+              last: Option[Int] = None,
+             )(implicit ctx: Context[DataContext, Unit]): ExtendedConnection[GraphQLPerson] = {
+    val results = ctx.ctx.repo.personDao.getAll
+
+    ExtendedConnection.connectionFromSeq(
+      results.map(new GraphQLPerson(_)),
+      ConnectionArgs(before, after, first, last),
+    )
   }
 
   // NOTE: toggle between these 2 implementations and see the difference

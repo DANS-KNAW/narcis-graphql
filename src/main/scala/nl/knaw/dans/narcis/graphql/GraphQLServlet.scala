@@ -22,6 +22,7 @@ import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import nl.knaw.dans.lib.logging.servlet.{ LogResponseBodyOnError, MaskedLogFormatter, ServletLogger }
 import nl.knaw.dans.narcis.graphql.app.database.DatabaseAccess
 import nl.knaw.dans.narcis.graphql.app.graphql.middleware.{ Middlewares, ProfilingConfiguration }
+import nl.knaw.dans.narcis.graphql.app.graphql.relay.RelayValidation
 import nl.knaw.dans.narcis.graphql.app.graphql.{ DataContext, GraphQLSchema }
 import nl.knaw.dans.narcis.graphql.app.repository.Repository
 import org.json4s.JsonAST.JObject
@@ -34,6 +35,7 @@ import sangria.ast.Document
 import sangria.execution._
 import sangria.marshalling.json4s.native._
 import sangria.parser.{ DeliveryScheme, ParserConfig, QueryParser, SyntaxError }
+import sangria.validation.QueryValidator
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ ExecutionContext, Future }
@@ -99,6 +101,7 @@ class GraphQLServlet(database: DatabaseAccess,
         deferredResolver = GraphQLSchema.deferredResolver,
         exceptionHandler = defaultExceptionHandler,
         middleware = middlewares.values,
+        queryValidator = QueryValidator.ruleBased(QueryValidator.allRules ::: RelayValidation.allRules),
         //maxQueryDepth = Some(7), // protect against malicious queries, but schema request hit this one!
         queryReducers = rejectComplexQueries :: Nil, // protect against malicious queries
       )
