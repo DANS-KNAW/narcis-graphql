@@ -17,15 +17,16 @@ package nl.knaw.dans.narcis.graphql.app.graphql
 
 import java.util.UUID
 
-import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{PersonResolver, WorkResolver}
-import nl.knaw.dans.narcis.graphql.app.graphql.types.{GraphQLExternalPersonId, GraphQLExternalWorkId, GraphQLPerson, GraphQLWork, Query}
-import nl.knaw.dans.narcis.graphql.app.model.{PersonIdType, WorkIdType, WorkType}
+import nl.knaw.dans.narcis.graphql.app.graphql.relay.ExtendedConnection
+import nl.knaw.dans.narcis.graphql.app.graphql.resolvers.{ PersonResolver, WorkResolver }
+import nl.knaw.dans.narcis.graphql.app.graphql.types.{ GraphQLExternalPersonId, GraphQLExternalWorkId, GraphQLPerson, GraphQLWork, Query }
+import nl.knaw.dans.narcis.graphql.app.model.{ PersonIdType, WorkIdType, WorkType }
 import org.joda.time.LocalDate
 import sangria.ast.StringValue
 import sangria.execution.deferred.DeferredResolver
 import sangria.macros.derive._
-import sangria.schema.{ObjectType, ScalarType, Schema}
-import sangria.validation.{StringCoercionViolation, ValueCoercionViolation, Violation}
+import sangria.schema.{ ObjectType, ScalarType, Schema }
+import sangria.validation.{ StringCoercionViolation, ValueCoercionViolation, Violation }
 
 import scala.util.Try
 
@@ -125,4 +126,8 @@ object GraphQLSchema {
     WorkResolver.byPersonIdFetcher,
     WorkResolver.authorWorkIdFetcher,
   )
+
+  implicit def GeneralConnectionType[Ctx, T](implicit objType: ObjectType[Ctx, T]): ObjectType[Ctx, ExtendedConnection[T]] = {
+    ExtendedConnection.definition[Ctx, ExtendedConnection, T](objType.name, objType).connectionType
+  }
 }
